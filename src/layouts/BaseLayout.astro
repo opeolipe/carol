@@ -1,0 +1,174 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: string;
+}
+
+const { 
+  title, 
+  description = "Senior Product Manager bridging strategy and cybersecurity.",
+  image = "/headshot.webp",
+  type = "website"
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// CSP Policy - Strict production version in headers; slightly relaxed for dev preview modules
+const csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+
+    <!-- Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Cinematic Scripts -->
+    <script>
+      import Lenis from 'lenis';
+      import { gsap } from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+      // Initialize GSAP
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Smooth Scroll Initialization
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+      });
+
+      function raf(time: number) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      // Custom Cursor Logic
+      const cursor = document.getElementById('custom-cursor');
+      let mouseX = 0, mouseY = 0;
+      let cursorX = 0, cursorY = 0;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      function updateCursor() {
+        // Simple lerp for smooth move
+        cursorX += (mouseX - cursorX) * 0.15;
+        cursorY += (mouseY - cursorY) * 0.15;
+        
+        if (cursor) {
+          cursor.style.left = `${cursorX}px`;
+          cursor.style.top = `${cursorY}px`;
+        }
+        requestAnimationFrame(updateCursor);
+      }
+      updateCursor();
+
+      // Cursor expand logic
+      document.querySelectorAll('a, button, .interactive').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor?.classList.add('active'));
+        el.addEventListener('mouseleave', () => cursor?.classList.remove('active'));
+      });
+    </script>
+    <title>{title} | Carol</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type === 'profile' ? 'profile' : 'website'} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.url)} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.url)} />
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Carol",
+        "jobTitle": "Senior Product Manager",
+        "description": "Bridging Product Strategy and Cybersecurity",
+        "url": "https://carolineratuolivia.com",
+        "sameAs": [
+          "https://www.linkedin.com/in/caroline-ratuolivia/",
+          "https://github.com/opeolipe"
+        ]
+      }
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col selection:bg-zinc-900 selection:text-white">
+    <div id="custom-cursor"></div>
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <header class="fixed top-0 left-0 w-full px-8 py-8 flex justify-between items-center z-[1000]">
+      <a href="/" class="text-xl font-bold tracking-tighter uppercase interactive">Carol.</a>
+      <nav class="flex items-center gap-8">
+        <a href="/projects" class="text-[10px] uppercase tracking-widest font-bold interactive">Work</a>
+        <a href="/blog" class="text-[10px] uppercase tracking-widest font-bold interactive">Writing</a>
+        <a href="/about" class="text-[10px] uppercase tracking-widest font-bold interactive">Profile</a>
+      </nav>
+    </header>
+
+    <main id="main" class="flex-grow max-w-6xl mx-auto w-full px-8 focus:outline-none" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="max-w-6xl mx-auto w-full px-8 py-16 md:py-24 border-t border-zinc-200 mt-20 md:mt-32">
+      <div class="grid grid-cols-1 sm:flex-row md:grid-cols-4 gap-12 items-start">
+        <div class="md:col-span-2">
+          <span class="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 font-bold block">Systems & strategy</span>
+          <p class="text-lg font-medium max-w-sm mb-6">
+            Bringing together product thinking, analytics, and an evolving interest in security and digital trust systems.
+          </p>
+          <p class="text-[11px] text-zinc-400 italic">Built with care by Carol – security-first, privacy-first.</p>
+        </div>
+
+        <div class="space-y-4">
+          <span class="text-[10px] uppercase tracking-widest text-zinc-400 font-bold block">Proof of Work</span>
+          <ul class="text-[11px] font-bold uppercase tracking-tighter space-y-2 text-zinc-500">
+            <li>Zero Tracking</li>
+            <li>Static Architecture</li>
+            <li>No Cookies</li>
+            <li>CSP Hardened</li>
+          </ul>
+        </div>
+        
+        <div class="flex flex-col items-start sm:items-end gap-4">
+          <span class="text-[10px] uppercase tracking-widest text-zinc-400 font-bold block">Connect</span>
+          <div class="flex gap-6 text-xs font-bold uppercase tracking-tighter">
+            <a href="https://github.com/opeolipe" target="_blank" rel="noopener noreferrer" aria-label="GitHub (opens in new tab)" class="hover:underline underline-offset-4">GitHub</a>
+            <a href="https://www.linkedin.com/in/caroline-ratuolivia/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in new tab)" class="hover:underline underline-offset-4">LinkedIn</a>
+          </div>
+          <a href="/pgp.txt" class="text-[10px] font-mono hover:underline">PGP: B67D...8F2C</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #F8F9FA;
+    --foreground: #18181B; /* Deep Zinc */
+    --muted: #71717a;
+    --accent: #18181B;
+    --border: #e4e4e7;
+    --spacing-unit: 8px;
+  }
+
+  * {
+    cursor: none !important;
+  }
+
+  html.lenis {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  #custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: var(--foreground);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    mix-blend-mode: difference;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.3s ease;
+    transform: translate(-50%, -50%);
+  }
+
+  #custom-cursor.active {
+    transform: translate(-50%, -50%) scale(4);
+    background-color: rgba(24, 24, 27, 0.1);
+  }
+
+  /* Support reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    * {
+      cursor: auto !important;
+    }
+    #custom-cursor {
+      display: none;
+    }
+  }
+
+  /* Custom focus styles for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* Skip to content link */
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: 10px;
+    background: var(--accent);
+    color: white;
+    padding: 8px 16px;
+    z-index: 10001;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .skip-link:focus {
+    top: 10px;
+  }
+}
+
+@layer components {
+  .horizontal-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .horizontal-track {
+    display: flex;
+    height: 100%;
+    will-change: transform;
+  }
+
+  .project-card {
+    flex-shrink: 0;
+    width: 80vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 5vw;
+  }
+
+  .interactive {
+    cursor: none;
+  }
+}

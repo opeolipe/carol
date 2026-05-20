@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Privacy Policy">
+  <article class="max-w-xl">
+    <h1 class="text-3xl font-bold tracking-tight mb-8">Privacy-First Portfolio</h1>
+    
+    <p class="text-zinc-600 leading-relaxed mb-6">
+      This website is designed with extreme privacy in mind. Here is exactly how your data is (not) handled:
+    </p>
+ 
+    <ul class="space-y-6 list-none border-l border-zinc-200 pl-6">
+      <li>
+        <h2 class="font-bold mb-2">Zero Tracking</h2>
+        <p class="text-sm text-zinc-500">No Google Analytics, no Meta pixels, and no third-party scripts. Your visit is your business.</p>
+      </li>
+      <li>
+        <h2 class="font-bold mb-2">Zero Cookies</h2>
+        <p class="text-sm text-zinc-500">This site does not use cookies for tracking or any other purpose.</p>
+      </li>
+      <li>
+        <h2 class="font-bold mb-2">Security Headers</h2>
+        <p class="text-sm text-zinc-500">Every request is protected by a strict Content Security Policy (CSP) to prevent cross-site scripting (XSS) and other injection attacks.</p>
+      </li>
+      <li>
+        <h2 class="font-bold mb-2">Hosting</h2>
+        <p class="text-sm text-zinc-500">This site is hosted as a static application on GitHub Pages. GitHub may collect server logs (IP addresses) for security and maintenance, which is out of my control but standard for web hosting.</p>
+      </li>
+    </ul>
+
+    <p class="mt-12 text-xs text-zinc-400 italic">
+      Last Updated: May 2026
+    </p>
+  </article>
+</BaseLayout>

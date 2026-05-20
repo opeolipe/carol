@@ -1,0 +1,6 @@
+{
+  "name": "Carol Portfolio",
+  "description": "Secure, editorial portfolio for Carol - Senior PM transitioning to Cybersecurity.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
