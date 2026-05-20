@@ -9,7 +9,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <p class="text-zinc-600 max-w-sm mx-auto mb-10 leading-relaxed">
       The page you are looking for might have been moved, deleted, or you may lack the necessary clearance.
     </p>
-    <a href="/" class="text-sm font-bold uppercase tracking-tighter border border-zinc-900 px-6 py-3 hover:bg-zinc-900 hover:text-white transition-colors">
+    <a href={import.meta.env.BASE_URL} class="text-sm font-bold uppercase tracking-tighter border border-zinc-900 px-6 py-3 hover:bg-zinc-900 hover:text-white transition-colors">
       Return to Dashboard
     </a>
   </div>

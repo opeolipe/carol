@@ -21,7 +21,7 @@ const posts = (await getCollection('blog')).sort(
             })}
           </time>
           <h2 class="text-xl font-bold tracking-tight mb-2 group-hover:text-slate-600 transition-colors">
-            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+            <a href={`${import.meta.env.BASE_URL}/blog/${post.slug}`}>{post.data.title}</a>
           </h2>
           <p class="text-slate-600 leading-relaxed max-w-2xl">
             {post.data.description}
