@@ -63,25 +63,25 @@ export const Act3Section: React.FC = () => {
                <span className="text-[9px] font-mono text-zinc-300 uppercase tracking-[0.5em]">trc_int_01</span>
             </div>
 
-            <h3 className="text-[clamp(2.5rem,7vw,8rem)] font-light tracking-tighter text-zinc-900 leading-[0.85] text-center max-w-5xl">
-              <span className="block mb-6 opacity-20 whitespace-nowrap">The frequency</span>
-              <span className="block mb-6"><span className="inline-block">shifted.</span></span>
-              <span className="block md:ml-[15vw] text-zinc-400 italic">
-                The noise <span className="inline-block whitespace-nowrap text-zinc-900 not-italic font-normal">was inside now.</span>
+            <h3 className="text-[clamp(2rem,6vw,5rem)] font-light tracking-tighter text-zinc-900 leading-[0.9] text-center max-w-4xl">
+              <span className="block mb-8 opacity-20">At some point,</span>
+              <span className="block">the noise stopped</span>
+              <span className="block md:ml-[10vw] text-zinc-400 italic">
+                feeling <span className="inline-block whitespace-nowrap text-zinc-900 not-italic font-normal">external.</span>
               </span>
             </h3>
 
-            {/* Visual Rupture: Displacement moment */}
+            {/* Visual Rupture: Displacement moment - now quieter */}
             <motion.div 
                style={{ 
-                 opacity: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 0.3, 0]),
-                 x: useTransform(scrollYProgress, [0.5, 0.53, 0.57, 0.6], [0, 20, -20, 0]),
-                 skewX: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 10, 0]),
-                 scaleY: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [1, 2, 1])
+                 opacity: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 0.15, 0]),
+                 x: useTransform(scrollYProgress, [0.5, 0.53, 0.57, 0.6], [0, 10, -10, 0]),
+                 skewX: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 5, 0]),
+                 scaleY: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [1, 1.2, 1])
                }}
-               className="pointer-events-none select-none text-[10vw] font-black text-zinc-950/5 uppercase tracking-tighter"
+               className="pointer-events-none select-none text-[8vw] font-black text-zinc-950/[0.03] uppercase tracking-tighter"
             >
-              SIGNAL_FRACTURE
+              SIGNAL_DRIFT
             </motion.div>
 
             <div className="pt-32 opacity-10">
@@ -102,42 +102,33 @@ export const Act3Section: React.FC = () => {
                />
             </div>
 
-            <div className="lg:col-span-11 space-y-[40vh] pb-[20vh]">
+            <div className="lg:col-span-11 space-y-[30vh] pb-[10vh]">
               <InternalFragment 
                 id="INT-05" 
                 title="Shift."
-                text="Everything became urgent. The signals I used to map drifted into noise." 
+                text="Everything started sounding urgent. The signals I used to map stopped resolving cleanly." 
                 annotation="trace_int: signal_drift"
-              />
-
-              <InternalFragment 
-                id="INT-09" 
-                title="Joints."
-                text="Pressure reveals the structure. What breaks first is exactly how it was built."
-                annotation="trace_int: structural_noise"
-                align="right"
               />
             </div>
           </div>
         </div>
 
         {/* Closing Breath (Transition to Act 4) */}
-         <div className="h-screen flex flex-col items-center justify-center px-8 text-center bg-white relative z-20">
+         <div className="h-[60vh] flex flex-col items-center justify-center px-8 text-center bg-white relative z-20">
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-12"
+              transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-8"
             >
-               <div className="space-y-6">
-                 <div className="w-px h-16 bg-zinc-950 mx-auto" />
-                 <span className="text-[10px] uppercase tracking-[1em] text-zinc-950 font-black block">Restore Signal</span>
+               <div className="space-y-4">
+                 <div className="w-px h-12 bg-zinc-950/20 mx-auto" />
+                 <span className="text-[9px] uppercase tracking-[0.8em] text-zinc-400 font-bold block">Restore Signal</span>
                </div>
                
                <div className="max-w-xs mx-auto">
-                  <p className="text-[10px] text-zinc-400 font-light leading-[2] uppercase tracking-[0.2em]">
-                    The investigation persists. <br /> 
-                    Curiosity returns through action.
+                  <p className="text-[9px] text-zinc-300 font-light leading-relaxed uppercase tracking-[0.2em]">
+                    The investigation persists.
                   </p>
                </div>
             </motion.div>
