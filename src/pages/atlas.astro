@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ArchiveAtlas } from '../components/ArchiveAtlas';
+
+// Pull from all collections to feed our dynamic interactive atlas
+const rawInvestigations = await getCollection('blog');
+const rawFieldNotes = await getCollection('fieldNotes');
+const rawSignals = await getCollection('signals');
+
+// Format lists for React Component compatibility
+const investigations = rawInvestigations.map(item => ({
+  slug: item.slug,
+  title: item.data.title,
+  description: item.data.description,
+  date: item.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+  investigationId: item.data.investigationId,
+  signalCategory: item.data.signalCategory,
+  signalState: item.data.signalState,
+}));
+
+const fieldNotes = rawFieldNotes.map(item => ({
+  slug: item.slug,
+  title: item.data.title,
+  observation: item.data.observation,
+  insight: item.data.insight,
+  unresolvedSignal: item.data.unresolvedSignal,
+  pattern: item.data.pattern,
+  signalState: item.data.signalState,
+  category: item.data.category,
+  date: item.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+  coordinates: item.data.coordinates,
+}));
+
+const activeSignals = rawSignals.map(item => ({
+  observation: item.data.observation,
+  category: item.data.category,
+  timestamp: item.data.timestamp.toISOString(),
+  status: item.data.status,
+  coordinates: item.data.coordinates,
+}));
+---
+
+<BaseLayout 
+  title="Archive_Atlas" 
+  description="An interactive, cinematic overview of the living investigation ecosystem, tracking structural patterns across the modern digital sphere."
+>
+  <div class="max-w-7xl mx-auto px-8 md:px-24 pt-32 pb-48">
+    
+    {/* Page Narrative Header */}
+    <header class="space-y-6 mb-24 md:mb-32">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-px bg-zinc-950" />
+        <span class="text-[9px] font-mono uppercase tracking-[0.6em] text-zinc-950 font-black">Archive_Atlas_Atlas</span>
+      </div>
+      <h1 class="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-zinc-950 leading-[0.85] uppercase">
+        Signal Atlas
+      </h1>
+      <p class="text-[clamp(1.1rem,2vw,2.2rem)] font-light text-zinc-400 italic leading-none tracking-tight max-w-4xl">
+        A structured, living taxonomy revealing connections between <span class="text-zinc-900 font-medium">investigations</span>, <span class="text-zinc-900 font-medium">field observations</span>, and <span class="text-zinc-900 font-medium">real-time behavioral traces</span>.
+      </p>
+    </header>
+
+    {/* React Render Column */}
+    <ArchiveAtlas 
+      client:load 
+      investigations={investigations} 
+      fieldNotes={fieldNotes} 
+      activeSignals={activeSignals} 
+    />
+
+    {/* Dynamic Bottom Watermark Grid */}
+    <div class="mt-48 pointer-events-none opacity-[0.03] select-none text-center h-24 border-t border-zinc-950/10 flex items-center justify-between">
+       <span class="text-[8px] font-mono uppercase tracking-[0.8em]">SYSTEMIC_TOPOLOGY_V1</span>
+       <span class="text-[8px] font-mono uppercase tracking-[0.8em]">© CAROLINE_TERMINAL_2026</span>
+    </div>
+
+  </div>
+</BaseLayout>
