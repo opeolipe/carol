@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useArchiveStillness } from './StillnessState';
+import { useSignalDrift, driftCoordinate, driftRearrange, driftStateEmphasis } from './SignalDriftState';
 
 interface FieldNote {
   title: string;
@@ -17,6 +18,7 @@ interface FieldNote {
 
 export const FieldNotesList = ({ initialNotes }: { initialNotes: FieldNote[] }) => {
   const isStill = useArchiveStillness();
+  const drift = useSignalDrift();
   const [activeFilter, setActiveFilter] = useState<string>('ALL');
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
   const [degradeLevel, setDegradeLevel] = useState<Record<string, number>>({});
@@ -44,9 +46,16 @@ export const FieldNotesList = ({ initialNotes }: { initialNotes: FieldNote[] }) 
     }
   };
 
+  // Dynamically drift and shuffle components depending on overall archive drift coefficients
+  const driftedNotes = driftRearrange(initialNotes, drift.visits).map(note => ({
+    ...note,
+    signalState: driftStateEmphasis(note.signalState, drift.visits, drift.timeDrift),
+    coordinates: driftCoordinate(note.coordinates, drift.visits, drift.timeDrift)
+  }));
+
   const filteredNotes = activeFilter === 'ALL' 
-    ? initialNotes 
-    : initialNotes.filter(n => n.signalState === activeFilter);
+    ? driftedNotes 
+    : driftedNotes.filter(n => n.signalState === activeFilter);
 
   const filterStates: ('ALL' | 'ACTIVE' | 'DRIFTING' | 'UNRESOLVED' | 'DECAYING')[] = [
     'ALL', 'ACTIVE', 'DRIFTING', 'UNRESOLVED', 'DECAYING'

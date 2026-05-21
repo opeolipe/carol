@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Sparkles, Footprints, AlertCircle, RefreshCw, Layers, Compass, ExternalLink } from 'lucide-react';
 import { useArchiveStillness } from './StillnessState';
+import { useSignalDrift, driftCoordinate, driftRearrange, driftStateEmphasis } from './SignalDriftState';
 
 interface ArchiveNode {
   id: string;
@@ -35,6 +36,7 @@ export const ArchiveAtlas = ({
   activeSignals: any[]; 
 }) => {
   const isStill = useArchiveStillness();
+  const drift = useSignalDrift();
   const [selectedCategory, setSelectedCategory] = useState<string>('CAT-TRST');
   const [visitedNodes, setVisitedNodes] = useState<string[]>([]);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
@@ -111,17 +113,21 @@ export const ArchiveAtlas = ({
       if (inv.slug.includes('product')) cat = 'CAT-TRST';
       if (inv.slug.includes('hello')) cat = 'CAT-SIDE';
 
+      const origState = (inv.signalState as any) || 'ACTIVE';
+      const driftedState = driftStateEmphasis(origState, drift.visits, drift.timeDrift);
+      const baseCoords = inv.investigationId || `TRC-${i}09`;
+
       list.push({
         id: `inv-${inv.slug}`,
         title: inv.title,
         type: 'INVESTIGATION',
-        state: (inv.signalState as any) || 'ACTIVE',
+        state: driftedState,
         category: cat,
         url: `/carol/blog/${inv.slug}`,
         description: inv.description,
         observedDate: inv.date,
-        resonanceCoeff: 0.15 + (i * 0.08),
-        coordinates: inv.investigationId || `TRC-${i}09`
+        resonanceCoeff: (0.15 + (i * 0.08)) * (1 + drift.timeDrift * 0.1),
+        coordinates: driftCoordinate(baseCoords, drift.visits, drift.timeDrift)
       });
     });
 
@@ -133,17 +139,21 @@ export const ArchiveAtlas = ({
       if (fn.slug.includes('institutional')) cat = 'CAT-TRST';
       if (fn.slug.includes('latency')) cat = 'CAT-AIEX';
 
+      const origState = (fn.signalState as any) || 'UNRESOLVED';
+      const driftedState = driftStateEmphasis(origState, drift.visits, drift.timeDrift);
+      const baseCoords = fn.coordinates || `SYS-TRC-${i}12`;
+
       list.push({
         id: `fn-${fn.slug}`,
         title: fn.title,
         type: 'FIELD_NOTE',
-        state: (fn.signalState as any) || 'UNRESOLVED',
+        state: driftedState,
         category: cat,
         url: `/carol/notes`, // redirects to Field Notes page with active highlight
         description: fn.observation,
         observedDate: fn.date,
-        resonanceCoeff: 0.22 + (i * 0.05),
-        coordinates: fn.coordinates || `SYS-TRC-${i}12`
+        resonanceCoeff: (0.22 + (i * 0.05)) * (1 + drift.timeDrift * 0.15),
+        coordinates: driftCoordinate(baseCoords, drift.visits, drift.timeDrift)
       });
     });
 
@@ -154,16 +164,20 @@ export const ArchiveAtlas = ({
       if (sig.slug?.includes('trust') || sig.observation.includes('TRUST')) cat = 'CAT-AIEX';
       if (sig.slug?.includes('scam') || sig.observation.includes('SCAM')) cat = 'CAT-PSYC';
 
+      const origState = (sig.status === 'TRACKING' ? 'ACTIVE' : sig.status === 'DRIFTING' ? 'DRIFTING' : 'ARCHIVED') as any;
+      const driftedState = driftStateEmphasis(origState, drift.visits, drift.timeDrift);
+      const baseCoords = sig.coordinates || `LIVE-LOC-${i}8`;
+
       list.push({
         id: `sig-${i}`,
         title: sig.category,
         type: 'ACTIVE_SIGNAL',
-        state: (sig.status === 'TRACKING' ? 'ACTIVE' : sig.status === 'DRIFTING' ? 'DRIFTING' : 'ARCHIVED') as any,
+        state: driftedState,
         category: cat,
         description: sig.observation,
         observedDate: sig.timestamp,
-        resonanceCoeff: 0.12 + (i * 0.07),
-        coordinates: sig.coordinates || `LIVE-LOC-${i}8`
+        resonanceCoeff: (0.12 + (i * 0.07)) * (1 + drift.timeDrift * 0.08),
+        coordinates: driftCoordinate(baseCoords, drift.visits, drift.timeDrift)
       });
     });
 
@@ -171,7 +185,8 @@ export const ArchiveAtlas = ({
   };
 
   const allNodes = getMappedNodes();
-  const filteredNodes = allNodes.filter(node => node.category === selectedCategory);
+  const unfilteredNodesInCategory = allNodes.filter(node => node.category === selectedCategory);
+  const filteredNodes = driftRearrange(unfilteredNodesInCategory, drift.visits);
 
   useEffect(() => {
     const stored = localStorage.getItem('atlas_explore_history_v1');
@@ -320,7 +335,7 @@ export const ArchiveAtlas = ({
             {/* Simulated Live Metadata */}
             <div className="flex justify-between items-start text-[6px] font-mono text-zinc-400 uppercase tracking-[0.2em] relative z-10">
               <div>
-                [ SYSTEM_COALESCENCE: ACTIVE ] <br />
+                [ SYSTEM_COALESCENCE: ACTIVE ] [ DRIFT: {drift.telemetryDrift} ] <br />
                 RESOLVED_DISSENT_COEFF: {(filteredNodes.length * 0.14).toFixed(2)}
               </div>
               <div className="text-right">

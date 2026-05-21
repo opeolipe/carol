@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useArchiveStillness } from './StillnessState';
+import { useSignalDrift, driftCoordinate } from './SignalDriftState';
 
 interface Signal {
   observation: string;
@@ -12,14 +13,22 @@ interface Signal {
 
 export const CurrentSignals = ({ signals }: { signals: Signal[] }) => {
   const isStill = useArchiveStillness();
+  const drift = useSignalDrift();
 
   return (
     <section className="py-24 border-t border-zinc-100">
-      <div className="flex items-center gap-4 mb-16">
-        <div className="w-12 h-[1px] bg-zinc-950" />
-        <span className="text-[10px] font-mono uppercase tracking-[0.6em] text-zinc-950 font-black">
-          Currently_Tracking_Signals {isStill && <span className="text-purple-400 font-normal pl-2">[ SILENT_BREATH_LOCK ]</span>}
-        </span>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-16">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-[1px] bg-zinc-950" />
+          <span className="text-[10px] font-mono uppercase tracking-[0.6em] text-zinc-950 font-black">
+            Currently_Tracking_Signals {isStill && <span className="text-purple-400 font-normal pl-2">[ SILENT_BREATH_LOCK ]</span>}
+          </span>
+        </div>
+        <div className="text-[7px] font-mono text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+          <span>[ SESSION_V:{drift.visits} ]</span>
+          <span className="w-1 h-1 rounded-full bg-zinc-300" />
+          <span>ENVIRONMENT_JITTER: {(drift.timeDrift * 0.1).toFixed(4)}%</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -64,7 +73,7 @@ export const CurrentSignals = ({ signals }: { signals: Signal[] }) => {
                 </div>
                 {signal.coordinates && (
                   <div className="text-[6px] font-mono text-zinc-300 uppercase tracking-widest text-right">
-                    LOC: {signal.coordinates}
+                    LOC: {driftCoordinate(signal.coordinates, drift.visits, drift.timeDrift)}
                   </div>
                 )}
              </div>

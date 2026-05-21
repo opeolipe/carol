@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { setStillnessState, useArchiveStillness, getStillnessState } from './StillnessState';
+import { recordVisit } from './SignalDriftState';
 import { Eye, EyeOff, Zap, ShieldAlert, Sparkles, Compass } from 'lucide-react';
 
 export const StillnessHUD = () => {
@@ -13,6 +14,11 @@ export const StillnessHUD = () => {
   // Core configuration parameters
   const ACTIVE_DURATION = 24; // seconds of action
   const STILL_DURATION = 8;    // seconds of deep stillness
+
+  useEffect(() => {
+    // Record visit on client-side mount
+    recordVisit();
+  }, []);
 
   useEffect(() => {
     // If user enforces manual mode, we halt the automated countdown tracker

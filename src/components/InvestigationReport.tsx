@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import { useArchiveStillness, getStillnessState } from './StillnessState';
+import { useSignalDrift, driftCoordinate } from './SignalDriftState';
 
 interface MetadataProps {
   label: string;
@@ -343,6 +344,7 @@ export const ArchivePathway = ({
   fieldNotes?: { title: string; slug: string; category: string; observation: string; insight: string; unresolvedSignal: string; pattern: string; date: string; coordinates?: string }[];
 }) => {
   const isStill = useArchiveStillness();
+  const drift = useSignalDrift();
   const [history, setHistory] = useState<string[]>([]);
   const [hoveredTrace, setHoveredTrace] = useState<string | null>(null);
   const [expandedNote, setExpandedNote] = useState<string | null>(null);
@@ -471,6 +473,7 @@ export const ArchivePathway = ({
           <div className="space-y-6">
             <div className="flex items-center gap-3 border-b border-zinc-50 pb-4">
               <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-400 font-bold">Ambient_Live_Frequencies</span>
+              <span className="text-[7px] font-mono text-zinc-300 uppercase tracking-widest">[ DRIFT: {drift.telemetryDrift} ]</span>
               <span className={`w-1.5 h-1.5 rounded-full transition-all duration-1000 ${
                 isStill ? 'bg-purple-400/55 animate-none scale-90' : 'bg-emerald-500 animate-ping'
               }`} />
@@ -481,7 +484,7 @@ export const ArchivePathway = ({
                 <div key={i} className="p-5 border border-dashed border-zinc-200 bg-zinc-50/20 space-y-3 relative group">
                   <div className="flex justify-between items-center text-[7px] font-mono text-zinc-400 uppercase tracking-widest">
                     <span>{isStill ? "STABILIZED" : sig.status}</span>
-                    <span>{sig.coordinates || "SYS_TRC"}</span>
+                    <span>{sig.coordinates ? driftCoordinate(sig.coordinates, drift.visits, drift.timeDrift) : "SYS_TRC"}</span>
                   </div>
                   <p className="text-xs font-light text-zinc-600 leading-relaxed italic">
                     “{sig.observation}”
