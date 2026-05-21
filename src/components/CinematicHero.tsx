@@ -139,12 +139,10 @@ export const CinematicHero: React.FC = () => {
           transition={{ duration: 75, repeat: Infinity, ease: "linear" }}
           style={{ 
             x: driftX, 
-            y: useTransform([driftY, mobileDriftY], ([dy, mdy]) => (dy as number) + (mdy as number) * 0.4) 
-          }}
-          className="absolute inset-0 opacity-[0.15] blur-[200px] transition-all duration-[3000ms]"
-          style={{
+            y: useTransform([driftY, mobileDriftY], ([dy, mdy]) => (dy as number) + (mdy as number) * 0.4),
             background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 65%)'
           }}
+          className="absolute inset-0 opacity-[0.15] blur-[200px] transition-all duration-[3000ms]"
         />
 
         {/* Level 3: Midground Signal Fragments (Physical Noise) */}

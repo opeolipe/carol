@@ -30,12 +30,10 @@ export const Act3Section: React.FC = () => {
         <motion.div 
           style={{ 
             scale: useTransform(scrollYProgress, [0, 1], [1, 1.1]),
-            opacity: useTransform(scrollYProgress, [0.4, 0.5, 0.6], [0.02, 0.04, 0.02])
+            opacity: useTransform(scrollYProgress, [0.4, 0.5, 0.6], [0.02, 0.04, 0.02]),
+            background: 'radial-gradient(circle at 50% 50%, #71717a 0%, transparent 70%)' 
           }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180vw] h-[180vh] grayscale"
-          style={{ 
-            background: 'radial-gradient(circle at 50% 50%, #71717a 0%, transparent 70%)' 
-          }} 
         />
       </motion.div>
 

@@ -1,0 +1,73 @@
+{
+  "$ref": "#/definitions/fieldNotes",
+  "definitions": {
+    "fieldNotes": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "observation": {
+          "type": "string"
+        },
+        "insight": {
+          "type": "string"
+        },
+        "unresolvedSignal": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "signalState": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "ARCHIVED",
+            "UNRESOLVED",
+            "RECENT",
+            "DRIFTING",
+            "DECAYING"
+          ],
+          "default": "UNRESOLVED"
+        },
+        "category": {
+          "type": "string"
+        },
+        "date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "integer",
+              "format": "unix-time"
+            }
+          ]
+        },
+        "coordinates": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "observation",
+        "insight",
+        "unresolvedSignal",
+        "pattern",
+        "category",
+        "date"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
