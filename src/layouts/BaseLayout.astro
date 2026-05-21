@@ -71,17 +71,19 @@ const csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inl
       }
     </script>
   </head>
-  <body class="min-h-screen flex flex-col selection:bg-zinc-900 selection:text-white bg-[#fafafa]">
+  <body class="min-h-screen flex flex-col selection:bg-zinc-100 selection:text-zinc-900 bg-[#fbfbf9]">
     <div id="custom-cursor"></div>
     <a href="#main" class="skip-link">Skip to content</a>
 
     {!minimal && (
-      <header class="fixed top-0 left-0 w-full px-8 py-8 flex justify-between items-center z-[1000]">
-        <a href={import.meta.env.BASE_URL} class="text-xl font-bold tracking-tighter uppercase interactive">Carol.</a>
-        <nav class="flex items-center gap-8">
-          <a href={`${import.meta.env.BASE_URL}/projects`} class="text-[10px] uppercase tracking-widest font-bold interactive">Work</a>
-          <a href={`${import.meta.env.BASE_URL}/blog`} class="text-[10px] uppercase tracking-widest font-bold interactive">Writing</a>
-          <a href={`${import.meta.env.BASE_URL}/about`} class="text-[10px] uppercase tracking-widest font-bold interactive">Profile</a>
+      <header class="fixed top-0 left-0 w-full px-12 py-12 flex justify-between items-start z-[1000] pointer-events-none">
+        <a href={import.meta.env.BASE_URL} class="text-lg font-bold tracking-tight uppercase interactive pointer-events-auto">Carol.</a>
+        <nav class="flex flex-col items-end gap-2 pointer-events-auto">
+          <a href={`${import.meta.env.BASE_URL}/about`} class="text-[9px] uppercase tracking-[0.4em] font-extrabold text-zinc-400 hover:text-zinc-900 transition-colors interactive">Profile</a>
+          <div class="flex items-center gap-6">
+             <a href={`${import.meta.env.BASE_URL}/projects`} class="text-[9px] uppercase tracking-[0.4em] font-extrabold text-zinc-400 hover:text-zinc-900 transition-colors interactive">Work</a>
+             <a href={`${import.meta.env.BASE_URL}/blog`} class="text-[9px] uppercase tracking-[0.4em] font-extrabold text-zinc-400 hover:text-zinc-900 transition-colors interactive">Writing</a>
+          </div>
         </nav>
       </header>
     )}
