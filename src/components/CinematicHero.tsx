@@ -18,7 +18,7 @@ const NarrativeStep = ({ text, delay, duration = 2 }: { text: string; delay: num
 );
 
 export const CinematicHero: React.FC = () => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -31,10 +31,9 @@ export const CinematicHero: React.FC = () => {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setStep(1), 2000), // "The internet remembers everything."
-      setTimeout(() => setStep(2), 5500), // "Most people ignore the signals."
-      setTimeout(() => setStep(3), 9000), // "I couldn’t."
-      setTimeout(() => setStep(4), 12500), // Reveal identity
+      setTimeout(() => setStep(2), 3500), // "Most people ignore the signals."
+      setTimeout(() => setStep(3), 7000), // "I couldn’t."
+      setTimeout(() => setStep(4), 10500), // Reveal identity
     ];
 
     return () => timers.forEach(clearTimeout);
