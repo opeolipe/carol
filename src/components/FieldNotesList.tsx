@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useArchiveStillness } from './StillnessState';
 
 interface FieldNote {
   title: string;
@@ -15,6 +16,7 @@ interface FieldNote {
 }
 
 export const FieldNotesList = ({ initialNotes }: { initialNotes: FieldNote[] }) => {
+  const isStill = useArchiveStillness();
   const [activeFilter, setActiveFilter] = useState<string>('ALL');
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
   const [degradeLevel, setDegradeLevel] = useState<Record<string, number>>({});
@@ -103,18 +105,18 @@ export const FieldNotesList = ({ initialNotes }: { initialNotes: FieldNote[] }) 
                 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1], delay: index * 0.05 }}
-                className="group relative p-8 border border-zinc-100 bg-white"
+                className={`group relative p-8 border border-zinc-100 bg-white transition-opacity duration-1000 ${isStill ? 'opacity-80' : 'opacity-100'}`}
               >
                 {/* Horizontal Spine Accents */}
-                <div className="absolute top-0 left-0 w-2 h-[1px] bg-zinc-950/20 group-hover:w-full transition-all duration-1000" />
+                <div className={`absolute top-0 left-0 w-2 h-[1px] bg-zinc-950/20 transition-all duration-[1500ms] ${isStill ? '' : 'group-hover:w-full'}`} />
                 <div className="absolute top-0 left-0 w-[1px] h-4 bg-zinc-950/20" />
 
                 {/* Meta Row */}
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-3">
-                    <div className={`w-1.5 h-1.5 rounded-full ${stateBadges[note.signalState]?.color || 'bg-zinc-200'}`} />
+                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-1000 ${isStill ? 'bg-zinc-300 shadow-none animate-none' : (stateBadges[note.signalState]?.color || 'bg-zinc-200')}`} />
                     <span className="text-[7px] font-mono text-zinc-300 uppercase tracking-widest">
-                      {stateBadges[note.signalState]?.label || 'Dossier'} / {note.coordinates || 'N/A'}
+                      {isStill ? 'STILLED_TEMPORAL' : (stateBadges[note.signalState]?.label || 'Dossier')} / {note.coordinates || 'N/A'}
                     </span>
                   </div>
                   {visits > 0 && (
@@ -125,11 +127,11 @@ export const FieldNotesList = ({ initialNotes }: { initialNotes: FieldNote[] }) 
                 </div>
 
                 {/* Title & Core thought */}
-                <div className="space-y-3 cursor-pointer" onClick={() => handleNoteClick(note.slug)}>
+                <div className={`space-y-3 ${isStill ? 'cursor-default' : 'cursor-pointer'}`} onClick={() => !isStill && handleNoteClick(note.slug)}>
                   <span className="text-[8px] font-mono text-zinc-400 uppercase tracking-[0.3em] font-medium block">
                     {note.category}
                   </span>
-                  <h3 className="text-xl font-bold tracking-tighter uppercase text-zinc-950 group-hover:text-zinc-600 transition-colors">
+                  <h3 className={`text-xl font-bold tracking-tighter uppercase text-zinc-950 transition-colors duration-1000 ${isStill ? '' : 'group-hover:text-zinc-600'}`}>
                     {note.title}
                   </h3>
                   <div className="pt-2">
@@ -142,10 +144,15 @@ export const FieldNotesList = ({ initialNotes }: { initialNotes: FieldNote[] }) 
                 {/* Expand indicator */}
                 <div className="pt-6 flex items-center justify-between border-t border-zinc-50 mt-6 select-none">
                   <button 
-                    onClick={() => handleNoteClick(note.slug)}
-                    className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-400 hover:text-zinc-950 transition-colors"
+                    disabled={isStill}
+                    onClick={() => !isStill && handleNoteClick(note.slug)}
+                    className={`text-[8px] font-mono uppercase tracking-[0.4em] transition-colors duration-1000 ${
+                      isStill 
+                        ? 'text-zinc-300 cursor-default' 
+                        : 'text-zinc-400 hover:text-zinc-950'
+                    }`}
                   >
-                    {isExpanded ? 'Collapse_Signal -' : 'Expand_Dossier_Fibers +'}
+                    {isStill ? '[ Locked_for_Stillness ]' : isExpanded ? 'Collapse_Signal -' : 'Expand_Dossier_Fibers +'}
                   </button>
                   <span className="text-[8px] font-mono text-zinc-300 uppercase block">
                     {new Date(note.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}

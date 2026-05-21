@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
+import { useArchiveStillness, getStillnessState } from './StillnessState';
 
 interface MetadataProps {
   label: string;
@@ -333,59 +334,250 @@ export const InvestigationConclusion = ({ children }: { children: React.ReactNod
 );
 
 export const ArchivePathway = ({ 
-  traces 
+  traces,
+  signals = [],
+  fieldNotes = []
 }: { 
-  traces: { title: string; slug: string; investigationId?: string; category?: string }[] 
+  traces: { title: string; slug: string; investigationId?: string; category?: string; description?: string }[];
+  signals?: { observation: string; category: string; timestamp: string; status: string; coordinates?: string }[];
+  fieldNotes?: { title: string; slug: string; category: string; observation: string; insight: string; unresolvedSignal: string; pattern: string; date: string; coordinates?: string }[];
 }) => {
+  const isStill = useArchiveStillness();
   const [history, setHistory] = useState<string[]>([]);
+  const [hoveredTrace, setHoveredTrace] = useState<string | null>(null);
+  const [expandedNote, setExpandedNote] = useState<string | null>(null);
+  const [tickerOffset, setTickerOffset] = useState(0);
 
   useEffect(() => {
     const stored = localStorage.getItem('archive_memory_v1');
     if (stored) setHistory(JSON.parse(stored));
+
+    // Slow atmospheric background simulation
+    const interval = setInterval(() => {
+      const currentStatus = (window as any).__archiveStillnessState || 'ACTIVE';
+      if (currentStatus !== 'STILL') {
+        setTickerOffset(prev => (prev + 1) % 360);
+      }
+    }, 120);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="mt-32 pb-64">
-      <div className="flex items-center gap-4 mb-16">
-        <div className="w-12 h-[1px] bg-zinc-950" />
-        <span className="text-[10px] font-mono uppercase tracking-[0.6em] text-zinc-950 font-black">Connected_Pathways</span>
+    <section className="mt-48 pt-32 border-t border-zinc-100 pb-32 relative">
+      {/* Editorial Navigation Title */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-20">
+        <div className="flex items-center gap-4">
+          <div className="relative flex items-center justify-center w-6 h-6">
+            <motion.div 
+              animate={{ rotate: isStill ? 0 : 360 }}
+              transition={{ duration: isStill ? 0 : 12, repeat: isStill ? 0 : Infinity, ease: 'linear' }}
+              className="absolute inset-0 border border-dashed border-zinc-900/30 rounded-full"
+            />
+            <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-1000 ${isStill ? 'bg-purple-400' : 'bg-emerald-500'}`} />
+          </div>
+          <div className="space-y-1">
+            <span className="text-[9px] font-mono uppercase tracking-[0.5em] text-zinc-900 font-black block">SYSTEMIC_CONTINUATION_LAYER</span>
+            <span className={`text-[7px] font-mono uppercase tracking-[0.3em] transition-colors duration-1000 block ${isStill ? 'text-purple-400' : 'text-zinc-400'}`}>
+              {isStill ? 'Status: Temporal_Stillness_Resting' : 'Status: Observation_Engaged_Constant'}
+            </span>
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-4 text-right">
+          <span className="text-[7px] font-mono uppercase tracking-widest text-zinc-300">
+            [ COORDINATES SYSTEM LINK: SECURE_REF_VECTOR ]
+          </span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {traces.map((trace, i) => {
-          const isExamined = history.includes(trace.slug);
-          return (
-            <motion.a
-              key={trace.slug}
-              href={`/carol/blog/${trace.slug}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: i * 0.1 }}
-              className="group relative p-8 border border-zinc-100 hover:border-zinc-950 transition-all duration-700 bg-white"
-            >
-              <div className="space-y-4 relative z-10">
-                <div className="flex justify-between items-start">
-                  <span className="text-[7px] font-mono text-zinc-300 uppercase tracking-widest">{trace.investigationId || "TRC-7429"}</span>
-                  {isExamined && (
-                    <span className="text-[6px] font-mono text-emerald-500 uppercase tracking-widest border border-emerald-100 px-2 py-0.5 rounded-full bg-emerald-50/30">Already_Examined</span>
-                  )}
+      {/* Main Dual Continuum Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        
+        {/* Left Segment: Recurring Investigations & Pathways (Traces) */}
+        <div className="lg:col-span-7 space-y-12">
+          <div className="flex items-center gap-3 border-b border-zinc-50 pb-4">
+             <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-400 font-bold">Investigation_Continuity</span>
+             <span className="text-[6px] font-mono uppercase px-2 py-0.5 border border-zinc-100 rounded-full text-zinc-400 bg-zinc-50/50">Recurring_Traces</span>
+          </div>
+
+          <div className="space-y-6">
+            {traces.map((trace, i) => {
+              const isExamined = history.includes(trace.slug);
+              const isHovered = hoveredTrace === trace.slug && !isStill;
+
+              return (
+                <div 
+                  key={trace.slug}
+                  onMouseEnter={() => !isStill && setHoveredTrace(trace.slug)}
+                  onMouseLeave={() => setHoveredTrace(null)}
+                  className="relative group block"
+                >
+                  <a 
+                    href={isStill ? undefined : `/carol/blog/${trace.slug}`}
+                    className={`flex flex-col gap-4 p-8 border border-zinc-100 transition-all duration-1000 relative z-10 ${
+                      isStill 
+                        ? 'bg-zinc-50/10 border-zinc-50 opacity-60 cursor-default' 
+                        : 'bg-white/40 backdrop-blur-[2px] group-hover:border-zinc-950'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start text-zinc-400">
+                      <span className="text-[7px] font-mono tracking-widest uppercase block">
+                        {trace.investigationId || "TRC-7429"} 
+                        {isExamined && <span className="ml-2 text-emerald-500 opacity-60">[ Retained_Trace ]</span>}
+                      </span>
+                      {!isStill && (
+                        <svg className="w-4 h-4 text-zinc-300 group-hover:text-zinc-950 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                        </svg>
+                      )}
+                    </div>
+
+                    <h3 className="text-2xl font-bold tracking-tighter uppercase text-zinc-950 leading-tight">
+                      {trace.title}
+                    </h3>
+
+                    {trace.description && (
+                      <p className="text-sm font-light text-zinc-500 leading-relaxed italic pr-4 max-w-lg">
+                        {trace.description}
+                      </p>
+                    )}
+
+                    <div className="flex items-center gap-3 pt-2">
+                       <span className={`text-[8px] font-mono uppercase tracking-widest transition-colors duration-1000 ${
+                         isStill 
+                           ? 'text-zinc-300' 
+                           : 'text-zinc-400 group-hover:text-zinc-950 font-bold'
+                       }`}>
+                         {isStill ? '[ Core_Fibers_Resting_Secure ]' : 'Inspect_Dossier_Fibers →'}
+                       </span>
+                    </div>
+                  </a>
+
+                  {/* Aesthetic Shadow Displacement */}
+                  <div className={`absolute inset-0 bg-zinc-950/[0.01] -z-10 transition-transform duration-700 pointer-events-none ${
+                    isStill ? '' : 'group-hover:translate-x-1.5 group-hover:translate-y-1.5'
+                  }`} />
                 </div>
-                <h3 className="text-[1.5rem] font-bold tracking-tighter uppercase leading-none group-hover:tracking-normal transition-all duration-700">
-                  {trace.title}
-                </h3>
-                <div className="flex items-center gap-4 pt-4">
-                  <div className="w-6 h-[1px] bg-zinc-200 group-hover:bg-zinc-950 group-hover:w-10 transition-all duration-700" />
-                  <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-400 group-hover:text-zinc-950 transition-colors">Follow_Signal →</span>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right Segment: Ambient Monitoring & Daily Field Fragments (Signals & Connected Observations) */}
+        <div className="lg:col-span-1" /> {/* Layout Spacing Spacer */}
+
+        <div className="lg:col-span-4 space-y-12">
+          
+          {/* Active Broadcast Monitors */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 border-b border-zinc-50 pb-4">
+              <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-400 font-bold">Ambient_Live_Frequencies</span>
+              <span className={`w-1.5 h-1.5 rounded-full transition-all duration-1000 ${
+                isStill ? 'bg-purple-400/55 animate-none scale-90' : 'bg-emerald-500 animate-ping'
+              }`} />
+            </div>
+
+            <div className="space-y-4">
+              {signals && signals.map((sig, i) => (
+                <div key={i} className="p-5 border border-dashed border-zinc-200 bg-zinc-50/20 space-y-3 relative group">
+                  <div className="flex justify-between items-center text-[7px] font-mono text-zinc-400 uppercase tracking-widest">
+                    <span>{isStill ? "STABILIZED" : sig.status}</span>
+                    <span>{sig.coordinates || "SYS_TRC"}</span>
+                  </div>
+                  <p className="text-xs font-light text-zinc-600 leading-relaxed italic">
+                    “{sig.observation}”
+                  </p>
+                  <div className="flex justify-between items-center text-[6px] font-mono text-zinc-300 uppercase">
+                    <span>COORDINATE_RESIDENCE</span>
+                    <span>{isStill ? "RESTING" : (new Date(sig.timestamp).toLocaleTimeString('en-US', { hour12: false }) || "UTC_TIME")}</span>
+                  </div>
                 </div>
-              </div>
-              
-              {/* Background ID Watermark */}
-              <div className="absolute bottom-4 right-4 text-[4rem] font-black text-zinc-950/[0.02] pointer-events-none select-none tracking-tighter uppercase">
-                {trace.category || "TRACE"}
-              </div>
-            </motion.a>
-          );
-        })}
+              ))}
+            </div>
+          </div>
+
+          {/* Interactive Connected Observations (Field Notes) */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 border-b border-zinc-50 pb-4">
+               <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-400 font-bold">Connected_Field_Observations</span>
+               <span className={`text-[6px] font-mono uppercase transition-all duration-1000 ${isStill ? 'text-zinc-300 animate-none' : 'text-purple-400 animate-pulse'}`}>
+                 {isStill ? '[ SIGNALS_STABILIZED ]' : '[ DRIFT_ALERT ]'}
+               </span>
+            </div>
+
+            <div className="space-y-3">
+              {fieldNotes && fieldNotes.map((note, idx) => {
+                const isOpen = expandedNote === note.slug;
+                
+                return (
+                  <div 
+                    key={note.slug} 
+                    className="border border-zinc-100 bg-white/30 transition-all duration-500 overflow-hidden"
+                  >
+                    <button
+                      onClick={() => setExpandedNote(isOpen ? null : note.slug)}
+                      className="w-full text-left p-4 flex justify-between items-center hover:bg-zinc-50/50 transition-colors"
+                    >
+                      <div className="space-y-1">
+                        <span className="text-[7px] font-mono text-zinc-400 uppercase tracking-widest block">{note.category}</span>
+                        <h4 className="text-xs font-bold uppercase tracking-tight text-zinc-950">{note.title}</h4>
+                      </div>
+                      <span className="text-xs font-mono text-zinc-300">
+                        {isOpen ? '[-]' : '[+]'}
+                      </span>
+                    </button>
+
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="px-4 pb-4 overflow-hidden border-t border-zinc-50 pt-3 space-y-4 text-xs font-light text-zinc-600"
+                        >
+                          <p className="italic leading-relaxed">
+                            {note.observation}
+                          </p>
+                          
+                          <div className="space-y-2 border-t border-zinc-50 pt-3">
+                            <div>
+                               <span className="text-[6px] font-mono uppercase tracking-widest text-zinc-400 font-bold block">Behav_Insight:</span>
+                               <p className="text-[11px] text-zinc-500">{note.insight}</p>
+                            </div>
+                            <div>
+                               <span className="text-[6px] font-mono uppercase tracking-widest text-zinc-400 font-bold block">Pattern_Registered:</span>
+                               <span className="text-[10px] font-mono uppercase text-purple-500">{note.pattern}</span>
+                            </div>
+                          </div>
+                          
+                          <a 
+                            href="/carol/notes" 
+                            className="inline-block text-[7px] font-mono uppercase tracking-widest bg-zinc-950 text-white px-3 py-1 mt-2 hover:bg-zinc-800 transition-colors"
+                          >
+                            Explore_All_Field_Notes_Module →
+                          </a>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Atmospheric Ticker Backdrop line */}
+      <div className="mt-32 pt-8 border-t border-zinc-950/10 flex flex-col md:flex-row md:items-center justify-between gap-6 pointer-events-none opacity-40 select-none">
+         <span className="text-[8px] font-mono uppercase tracking-[0.5em] text-zinc-400">
+           TRACE_INTEGRITY: HIGH_FIDELITY
+         </span>
+         <span className="text-[8px] font-mono uppercase tracking-[0.5em] text-zinc-400">
+           ACTIVE_PERIPHERAL_SCAN_GRID: [DEGREES_CALIBRATION_{tickerOffset}°]
+         </span>
+         <span className="text-[8px] font-mono uppercase tracking-[0.5em] text-zinc-400">
+           AUTO_SURFACING_SIGNAL_SET
+         </span>
       </div>
     </section>
   );

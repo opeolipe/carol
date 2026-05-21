@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { StillnessHUD } from '../components/StillnessHUD';
 
 interface Props {
   title: string;
@@ -125,6 +126,8 @@ const csp = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inl
         </div>
       </footer>
     )}
+
+    <StillnessHUD client:load />
 
     <!-- Cinematic Scripts -->
     <script>

@@ -36,7 +36,8 @@ if (entry.data.relatedTraces && entry.data.relatedTraces.length > 0) {
         title: traceEntry.data.title,
         slug: traceEntry.slug,
         investigationId: traceEntry.data.investigationId,
-        category: traceEntry.data.signalCategory
+        category: traceEntry.data.signalCategory,
+        description: traceEntry.data.description
       });
     }
   }
@@ -50,9 +51,40 @@ if (entry.data.relatedTraces && entry.data.relatedTraces.length > 0) {
       title: p.data.title,
       slug: p.slug,
       investigationId: p.data.investigationId,
-      category: p.data.signalCategory
+      category: p.data.signalCategory,
+      description: p.data.description
     }));
 }
+
+// Fetch live monitoring signals
+const rawSignals = await getCollection('signals');
+const sortedSignals = rawSignals
+  .sort((a, b) => b.data.timestamp.getTime() - a.data.timestamp.getTime())
+  .slice(0, 2)
+  .map(s => ({
+    observation: s.data.observation,
+    category: s.data.category,
+    timestamp: s.data.timestamp.toISOString(),
+    status: s.data.status,
+    coordinates: s.data.coordinates || ""
+  }));
+
+// Fetch brief unresolved field notes
+const rawNotes = await getCollection('fieldNotes');
+const sortedNotes = rawNotes
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 2)
+  .map(n => ({
+    title: n.data.title,
+    slug: n.slug,
+    category: n.data.category,
+    observation: n.data.observation,
+    insight: n.data.insight,
+    unresolvedSignal: n.data.unresolvedSignal,
+    pattern: n.data.pattern,
+    date: n.data.date.toISOString(),
+    coordinates: n.data.coordinates || ""
+  }));
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description} type="article">
@@ -75,7 +107,12 @@ if (entry.data.relatedTraces && entry.data.relatedTraces.length > 0) {
           The investigation remains open. The signals recorded suggest a deeper pattern of behavioral drift that requires further long-term observation. Traces will be updated as new data fragments emerge from the archive.
         </InvestigationConclusion>
 
-        <ArchivePathway client:load traces={relatedTracesData} />
+        <ArchivePathway 
+          client:load 
+          traces={relatedTracesData} 
+          signals={sortedSignals}
+          fieldNotes={sortedNotes}
+        />
       </article>
     </div>
   </ReadingEnvironment>

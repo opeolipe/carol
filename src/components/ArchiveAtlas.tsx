@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Sparkles, Footprints, AlertCircle, RefreshCw, Layers, Compass, ExternalLink } from 'lucide-react';
+import { useArchiveStillness } from './StillnessState';
 
 interface ArchiveNode {
   id: string;
@@ -33,6 +34,7 @@ export const ArchiveAtlas = ({
   fieldNotes: any[]; 
   activeSignals: any[]; 
 }) => {
+  const isStill = useArchiveStillness();
   const [selectedCategory, setSelectedCategory] = useState<string>('CAT-TRST');
   const [visitedNodes, setVisitedNodes] = useState<string[]>([]);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
@@ -237,21 +239,36 @@ export const ArchiveAtlas = ({
                 <button
                   key={catSpec.id}
                   onClick={() => {
+                    if (isStill) return; // Reduce interaction density
                     setSelectedCategory(catSpec.id);
                     setSimulationState('IDLE');
                   }}
-                  className={`w-full text-left p-4 md:p-5 border transition-all duration-700 relative overflow-hidden group ${
+                  className={`w-full text-left p-4 md:p-5 border transition-all duration-1000 relative overflow-hidden group ${
                     isSelected 
                       ? 'bg-zinc-950 border-zinc-950 text-white' 
+                      : isStill 
+                      ? 'bg-white border-zinc-100/60 opacity-60 cursor-default'
                       : 'bg-white border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50/50'
                   }`}
                 >
                   {/* Category Code Label */}
                   <div className="flex justify-between items-center mb-2">
-                    <span className={`text-[7px] font-mono uppercase tracking-widest ${isSelected ? 'text-zinc-400' : 'text-zinc-300 group-hover:text-zinc-500'}`}>
+                    <span className={`text-[7px] font-mono uppercase tracking-widest ${
+                      isSelected 
+                        ? 'text-zinc-400' 
+                        : isStill 
+                        ? 'text-zinc-300'
+                        : 'text-zinc-300 group-hover:text-zinc-500'
+                    }`}>
                       {catSpec.code}
                     </span>
-                    <IconComp className={`w-3.5 h-3.5 transition-transform duration-700 ${isSelected ? 'text-emerald-400 opacity-100 rotate-12' : 'text-zinc-300 group-hover:rotate-12'}`} />
+                    <IconComp className={`w-3.5 h-3.5 transition-transform duration-1000 ${
+                      isSelected 
+                        ? 'text-emerald-400 opacity-100 rotate-12' 
+                        : isStill 
+                        ? 'text-zinc-200 opacity-40'
+                        : 'text-zinc-300 group-hover:rotate-12'
+                    }`} />
                   </div>
 
                   {/* Category Bold Name */}
@@ -262,7 +279,13 @@ export const ArchiveAtlas = ({
                   {/* Sub labels row - quiet and minimal */}
                   <div className="flex flex-wrap gap-x-3 gap-y-1 pt-2 border-t border-zinc-50/10">
                     {catSpec.subLabels.slice(0, 2).map((label, idx) => (
-                      <span key={idx} className={`text-[6px] font-mono uppercase tracking-widest ${isSelected ? 'text-zinc-500' : 'text-zinc-300 group-hover:text-zinc-400'}`}>
+                      <span key={idx} className={`text-[6px] font-mono uppercase tracking-widest ${
+                        isSelected 
+                          ? 'text-zinc-500' 
+                          : isStill 
+                          ? 'text-zinc-300'
+                          : 'text-zinc-300 group-hover:text-zinc-400'
+                      }`}>
                         {label}
                       </span>
                     ))}
@@ -358,20 +381,24 @@ export const ArchiveAtlas = ({
                       animate={{ 
                         opacity: isDecaying ? 0.6 : 1, 
                         x: 0,
-                        y: isDrifting ? [0, -4, 4, 0] : 0,
+                        y: isDrifting && !isStill ? [0, -4, 4, 0] : 0,
                       }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ 
-                        duration: 0.8, 
+                        duration: isStill ? 1.5 : 0.8, 
                         ease: [0.19, 1, 0.22, 1], 
                         delay: idx * 0.05,
-                        y: isDrifting ? { duration: 4, repeat: Infinity, ease: 'easeInOut' } : undefined
+                        y: isDrifting && !isStill ? { duration: 4, repeat: Infinity, ease: 'easeInOut' } : undefined
                       }}
-                      onMouseEnter={() => setHoveredNode(node.id)}
+                      onMouseEnter={() => !isStill && setHoveredNode(node.id)}
                       onMouseLeave={() => setHoveredNode(null)}
-                      onClick={() => handleNodeInspect(node.id)}
-                      className={`p-4 bg-white border cursor-pointer hover:shadow-[8px_8px_24px_rgba(0,0,0,0.02)] transition-all duration-500 relative ${
-                        isHovered ? 'border-zinc-950 translation-x-1' : 'border-zinc-100'
+                      onClick={() => !isStill && handleNodeInspect(node.id)}
+                      className={`p-4 bg-white border transition-all duration-1000 relative ${
+                        isStill 
+                          ? 'border-zinc-100 opacity-80 cursor-default' 
+                          : isHovered 
+                          ? 'border-zinc-950 translation-x-1 shadow-[8px_8px_24px_rgba(0,0,0,0.02)]' 
+                          : 'border-zinc-100'
                       }`}
                     >
                       <div className="flex justify-between items-start gap-4">
@@ -381,12 +408,13 @@ export const ArchiveAtlas = ({
                               {node.coordinates}
                             </span>
                             <span className={`text-[6px] font-mono uppercase px-2 py-0.5 rounded-full border ${
+                              isStill ? 'text-zinc-400 border-zinc-100 bg-zinc-50' :
                               isUnresolved ? 'text-amber-500 border-amber-100 bg-amber-50/30 font-bold' :
                               isDrifting ? 'text-purple-500 border-purple-100 bg-purple-50/30' :
                               isDecaying ? 'text-rose-400 border-rose-100 bg-rose-50/10 font-black' :
                               'text-emerald-500 border-emerald-100 bg-emerald-50/30'
                             }`}>
-                              {node.state}
+                              {isStill ? 'STILLED' : node.state}
                             </span>
                             {isVisited && (
                               <span className="text-[6px] font-mono text-zinc-400 tracking-wider">
@@ -406,9 +434,9 @@ export const ArchiveAtlas = ({
                         {/* Direct Follow Connection link */}
                         {node.url && (
                           <a
-                            href={node.url}
-                            className={`p-2 border rounded-full transition-all duration-500 flex items-center justify-center ${
-                              isHovered 
+                            href={isStill ? undefined : node.url}
+                            className={`p-2 border rounded-full transition-all duration-1000 flex items-center justify-center ${
+                              isHovered && !isStill 
                                 ? 'bg-zinc-950 border-zinc-950 text-white' 
                                 : 'bg-transparent border-zinc-100 text-zinc-400'
                             }`}
@@ -442,8 +470,10 @@ export const ArchiveAtlas = ({
           {/* Connected Trace Explainer Section */}
           <div className="border border-zinc-100 p-6 md:p-8 bg-zinc-50/20 space-y-4">
              <div className="flex items-center gap-3">
-                <div className="w-2 h-[1px] bg-zinc-950 animate-pulse" />
-                <span className="text-[7px] font-mono uppercase tracking-[0.4em] text-zinc-950 font-black">Topology_Analysis_Ready</span>
+                <div className={`w-2 h-[1px] bg-zinc-950 transition-all duration-1000 ${isStill ? 'opacity-30' : 'animate-pulse'}`} />
+                <span className={`text-[7px] font-mono uppercase tracking-[0.4em] font-black transition-colors duration-1000 ${isStill ? 'text-purple-400' : 'text-zinc-950'}`}>
+                  {isStill ? 'TEMPORAL_DRIFT_LOCKED_STILLNESS_ENGAGED' : 'Topology_Analysis_Ready'}
+                </span>
              </div>
              <p className="text-[12px] font-light text-zinc-600 leading-relaxed italic pr-4">
                Each category represents an overarching behavioral system. Hover over any portal mapping on the left to trace how disparate data streams (comprising completed Investigations, active Field Notes, and persistent global monitoring Signals) interlock. Hovering elements reveals structural resonance pathways designed specifically to preserve context.
