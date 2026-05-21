@@ -19,19 +19,19 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
   });
 
   const opacity = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [0, 1, 1, 0]);
-  const blur = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [10, 0, 0, 8]); 
-  const y = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [30, 0, 0, -30]); 
+  const blur = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [8, 0, 0, 8]); 
+  const y = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [40, 0, 0, -40]); 
   const scale = useTransform(scrollYProgress, [0.3, 0.5], [0.99, 1]);
 
   return (
     <motion.div 
       ref={ref}
       style={{ opacity, filter: useTransform(blur, (v) => `blur(${v}px)`), y, scale }}
-      className="min-h-[80vh] md:min-h-screen flex flex-col items-center justify-center py-24 md:py-32 px-8 md:px-24 mb-[10vh] md:mb-[15vh]"
+      className="min-h-screen flex flex-col items-center justify-center py-32 md:py-48 px-8 md:px-24 mb-[5vh] md:mb-[10vh]"
     >
-      <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-12 gap-12 relative">
-        {/* Investigative Rails */}
-        <div className="hidden md:block col-span-1 border-l border-zinc-100 relative h-full">
+      <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24 relative">
+        {/* Investigative Rails - Visible on Larger Screens for Structural Rhythm */}
+        <div className="hidden lg:block lg:col-span-1 border-l border-zinc-100 relative h-full">
            <div className="absolute top-0 left-[-4px] w-2 h-2 rounded-full bg-zinc-200" />
            <motion.div 
              style={{ height: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
@@ -39,66 +39,71 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
            />
         </div>
 
-        <div className="md:col-span-11 space-y-12 md:space-y-16">
-          {/* Header Metadata */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-12">
+        <div className="lg:col-span-11 space-y-12 md:space-y-24">
+          {/* Header Metadata: Level 3 Hierarchy */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-16 border-b border-zinc-50 pb-8">
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                 <span className="text-[10px] font-mono tracking-[0.2em] text-zinc-500 font-bold">{id}</span>
-                 <div className="w-4 h-px bg-zinc-200" />
-                 <span className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 uppercase">{timestamp}</span>
+                 <span className="text-[10px] font-mono tracking-[0.3em] text-zinc-500 font-bold uppercase">{id}</span>
+                 <div className="w-8 h-px bg-zinc-100" />
+                 <span className="text-[10px] font-mono tracking-[0.3em] text-zinc-400 uppercase">{timestamp}</span>
               </div>
-              <h2 className="text-5xl md:text-9xl font-bold tracking-tight text-zinc-900 leading-[0.8] uppercase max-w-4xl">
+              
+              {/* Level 1: Primary Title - Fluid Typography */}
+              <h2 className="text-[clamp(2.5rem,8vw,8rem)] font-bold tracking-tight text-zinc-900 leading-[0.85] uppercase max-w-5xl">
                 {title}
               </h2>
             </div>
-            <div className="text-right hidden md:block">
-               <span className="text-[9px] font-mono tracking-[0.4em] text-zinc-300 uppercase vertical-text transform rotate-180" style={{ writingMode: 'vertical-rl' }}>
+            
+            <div className="hidden md:block">
+               <span className="text-[9px] font-mono tracking-[0.5em] text-zinc-300 uppercase vertical-text transform rotate-180 mb-4" style={{ writingMode: 'vertical-rl' }}>
                  {metadata}
                </span>
             </div>
           </div>
 
-          {/* Primary Observation */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-start">
-             <div className="space-y-10">
-                <div className="space-y-4">
-                   <span className="text-[9px] uppercase tracking-[0.6em] text-zinc-300 font-extrabold block">Primary Signal</span>
-                   <p className="text-2xl md:text-4xl font-light text-zinc-700 leading-tight max-w-xl">
+          {/* Core Observation Layer */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-32 items-start">
+             <div className="space-y-12">
+                {/* Level 2: Primary Observation Statement - Strict Width Control */}
+                <div className="space-y-6">
+                   <span className="text-[9px] uppercase tracking-[0.8em] text-zinc-300 font-black block">Signal Extract</span>
+                   <p className="text-[clamp(1.5rem,3vw,2.5rem)] font-light text-zinc-700 leading-[1.3] max-w-[18ch] md:max-w-[22ch]">
                      {observation}
                    </p>
                 </div>
-                <div className="pt-2">
-                   <a href="#" className="interactive group inline-flex items-center gap-6">
-                      <span className="text-[10px] uppercase tracking-[0.5em] font-extrabold text-zinc-400 group-hover:text-zinc-900 transition-all">
+                
+                <div className="pt-4">
+                   <a href="#" className="interactive group inline-flex items-center gap-8">
+                      <span className="text-[10px] uppercase tracking-[0.6em] font-black text-zinc-400 group-hover:text-zinc-900 transition-all duration-500">
                         Investigate Signal
                       </span>
-                      <div className="w-12 h-px bg-zinc-100 group-hover:w-24 group-hover:bg-zinc-900 transition-all duration-700" />
+                      <div className="w-16 h-px bg-zinc-100 group-hover:w-32 group-hover:bg-zinc-900 transition-all duration-700" />
                    </a>
                 </div>
              </div>
 
-             {/* Secondary Annotations */}
-             <div className="space-y-16 md:space-y-24 md:pt-48">
+             {/* Level 4: Fragmented Annotations - Investigative Rhythm */}
+             <div className="space-y-16 md:pt-32">
                 {annotations?.map((note, i) => (
                   <motion.div 
                     key={i}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-10% 0px" }}
-                    transition={{ delay: 0.2 * i, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                    className="space-y-3 relative group"
+                    viewport={{ once: true, margin: "-15% 0px" }}
+                    transition={{ delay: 0.25 * i, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="space-y-4 relative group max-w-sm"
                   >
-                    <div className="flex items-center gap-3">
-                       <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 group-hover:bg-zinc-900 transition-colors" />
-                       <span className="text-[8px] font-mono uppercase tracking-[0.3em] text-zinc-300 block">annotation_v{i+1}</span>
+                    <div className="flex items-center gap-4">
+                       <div className="w-2 h-2 border border-zinc-100 rounded-sm group-hover:bg-zinc-900 transition-all duration-500" />
+                       <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-300 block">annotation_trc_{i+1}</span>
                     </div>
-                    <p className="text-sm md:text-base font-light text-zinc-500 max-w-xs leading-relaxed border-l border-zinc-100 pl-6 group-hover:border-zinc-300 transition-colors">
+                    <p className="text-sm md:text-base font-light text-zinc-500 leading-relaxed pl-6 border-l border-zinc-100 group-hover:border-zinc-300 transition-colors duration-500">
                       {note}
                     </p>
-                    {/* Tiny Metadata Offset */}
-                    <div className="absolute -left-4 top-0 text-[6px] font-mono text-zinc-200 opacity-0 group-hover:opacity-100 transition-opacity">
-                       O_TRC_{id}_{i}
+                    {/* Hidden Metadata Detail */}
+                    <div className="absolute -left-6 top-0 text-[6px] font-mono text-zinc-200 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-x-2 group-hover:translate-x-0">
+                       ARCHIVE_ID_{id.replace('-', '')}_{i}
                     </div>
                   </motion.div>
                 ))}
@@ -175,28 +180,30 @@ export const ObservationSection: React.FC = () => {
       </motion.div>
 
       <div className="relative z-10 pt-48 md:pt-64">
-        <div className="max-w-6xl mx-auto px-8 mb-48 md:mb-64">
+        <div className="max-w-7xl mx-auto px-8 mb-64 md:mb-[40vh]">
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-            className="space-y-12 md:space-y-20"
+            className="space-y-12 md:space-y-24"
           >
              <div className="flex flex-col md:flex-row md:items-center gap-6">
-                <span className="text-[10px] uppercase tracking-[0.8em] text-zinc-400 font-bold block">Signal Archive</span>
-                <div className="hidden md:block w-px h-12 bg-zinc-100" />
+                <span className="text-[10px] uppercase tracking-[0.8em] text-zinc-400 font-black block">Signal Archive</span>
+                <div className="hidden md:block w-px h-16 bg-zinc-100" />
                 <span className="text-[10px] font-mono text-zinc-300">ACCESS_GRANTED://ACT_II</span>
              </div>
              
-             <h3 className="text-5xl md:text-[10vw] font-light tracking-tight text-zinc-900 leading-[0.85] max-w-6xl">
+             <h3 className="text-[clamp(3rem,10vw,12rem)] font-light tracking-tight text-zinc-900 leading-[0.85] max-w-7xl">
                Investigation is a <br /> 
                <span className="md:ml-[15vw]">quiet act.</span> <br />
                <span className="text-zinc-400 italic md:ml-[30vw]">Noticing patterns.</span>
              </h3>
 
-             <div className="max-w-md pt-8 md:ml-[30vw]">
-                <p className="text-sm font-light text-zinc-500 leading-relaxed uppercase tracking-[0.2em]">
-                  A DOCUMENTATION OF DIGITAL TRUST, BEHAVIORAL PATTERNS, AND SYSTEMIC AMBIGUITY.
+             <div className="max-w-sm pt-8 md:ml-[30vw] border-l border-zinc-100 pl-8">
+                <p className="text-[11px] font-light text-zinc-500 leading-[1.8] uppercase tracking-[0.25em]">
+                  A documented exploration <br />
+                  of digital trust, behavioral <br />
+                  triggers, and systemic ambiguity.
                 </p>
              </div>
           </motion.div>
