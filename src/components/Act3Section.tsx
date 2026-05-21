@@ -65,7 +65,7 @@ export const Act3Section: React.FC = () => {
 
             <h3 className="text-[clamp(2.5rem,7vw,8rem)] font-light tracking-tighter text-zinc-900 leading-[0.85] text-center max-w-5xl">
               <span className="block mb-6 opacity-20">At some point,</span>
-              <span className="block mb-6">the noise stopped</span>
+              <span className="block mb-6"><span className="inline-block">the noise</span> <span className="inline-block">stopped</span></span>
               <span className="block md:ml-[15vw] text-zinc-400 italic">
                 feeling <span className="inline-block whitespace-nowrap text-zinc-900 not-italic font-normal">external.</span>
               </span>

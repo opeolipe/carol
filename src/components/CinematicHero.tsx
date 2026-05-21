@@ -167,9 +167,9 @@ export const CinematicHero: React.FC = () => {
                       times: [0, 0.45, 0.5, 0.51, 1],
                       ease: "linear" 
                     }}
-                    className="text-xs md:text-sm uppercase tracking-[0.5em] font-medium text-zinc-400 select-none"
+                    className="text-[10px] md:text-sm uppercase tracking-[0.3em] md:tracking-[0.5em] font-medium text-zinc-400 select-none px-4 md:px-0"
                   >
-                    building thoughtful things for a noisy internet
+                    <span className="inline-block whitespace-nowrap">building thoughtful things</span> for a <span className="inline-block whitespace-nowrap">noisy internet</span>
                   </motion.p>
                 </motion.div>
               </motion.div>

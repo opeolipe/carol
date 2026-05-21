@@ -90,7 +90,7 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
                       <span className="text-[9px] uppercase tracking-[0.8em] text-zinc-300 font-black block">Signal Extract</span>
                    </div>
                    <p className="text-[clamp(1.5rem,3vw,2.5rem)] font-light text-zinc-700 leading-[1.3] max-w-[18ch] md:max-w-[22ch]"
-                      dangerouslySetInnerHTML={{ __html: observation.replace(/(behavioral triggers|digital trust|systemic ambiguity|signal trace|investigative archive|emotional urgency|familiarity)/gi, '<span class="inline-block whitespace-nowrap text-zinc-900 font-medium">$1</span>') }}
+                      dangerouslySetInnerHTML={{ __html: observation.replace(/(behavioral triggers|digital trust|systemic ambiguity|signal trace|investigative archive|emotional urgency|familiarity|signals and comfort|architecture of trust)/gi, '<span class="inline-block whitespace-nowrap text-zinc-900 font-medium">$1</span>') }}
                    />
                 </div>
                 
