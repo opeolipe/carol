@@ -18,9 +18,9 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
     offset: ["start end", "center center", "end start"]
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.35, 0.65, 1], [0, 1, 1, 0]);
-  const blur = useTransform(scrollYProgress, [0, 0.35, 0.65, 1], [10, 0, 0, 10]); 
-  const y = useTransform(scrollYProgress, [0, 0.35, 0.65, 1], [30, 0, 0, -30]); 
+  const opacity = useTransform(scrollYProgress, [0, 0.4, 0.65, 1], [0, 1, 1, 0]);
+  const blur = useTransform(scrollYProgress, [0, 0.4, 0.65, 1], [8, 0, 0, 12]); 
+  const y = useTransform(scrollYProgress, [0, 0.4, 0.65, 1], [20, 0, 0, -20]); 
   const scale = useTransform(scrollYProgress, [0.3, 0.5], [0.99, 1]);
 
   const container = {
@@ -28,15 +28,15 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2
+        staggerChildren: 0.25,
+        delayChildren: 0.4
       }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } }
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { duration: 1.8, ease: [0.16, 1, 0.3, 1] } }
   };
 
   return (
@@ -123,10 +123,10 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
                     className="space-y-4 relative group max-w-sm"
                   >
                     <div className="flex items-center gap-4">
-                       <div className="w-2 h-2 border border-zinc-100 rounded-sm group-hover:bg-zinc-900 transition-all duration-500" />
-                       <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-300 block">trace_v{i+1}</span>
+                       <div className="w-2 h-2 border border-zinc-200 rounded-sm group-hover:bg-zinc-900 transition-all duration-500" />
+                       <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-400 block">trace_v{i+1}</span>
                     </div>
-                    <p className="text-sm md:text-base font-light text-zinc-500 leading-relaxed md:leading-[1.7] pl-6 border-l border-zinc-100 group-hover:border-zinc-300 transition-all duration-500">
+                    <p className="text-sm md:text-base font-light text-zinc-600 leading-relaxed md:leading-[1.8] pl-6 border-l border-zinc-100 group-hover:border-zinc-400 transition-all duration-700">
                       {note}
                     </p>
                     <div className="absolute -left-6 top-0 text-[6px] font-mono text-zinc-200 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-x-2 group-hover:translate-x-0">
@@ -231,8 +231,8 @@ export const ObservationSection: React.FC = () => {
              <div className="relative">
                <h3 className="text-[clamp(2.5rem,9vw,11rem)] font-light tracking-tight text-zinc-900 leading-[0.85] max-w-7xl relative z-10">
                  <span className="block mb-4 md:mb-0">Investigation is a</span> 
-                 <span className="block md:ml-[12vw] mb-4 md:mb-0">quiet act.</span> 
-                 <span className="text-zinc-400 italic block md:ml-[28vw]">Noticing patterns.</span>
+                 <span className="block md:ml-[12vw] mb-4 md:mb-0 text-zinc-900 font-normal">quiet act.</span> 
+                 <span className="text-zinc-500 italic block md:ml-[32vw] font-light">Noticing patterns.</span>
                </h3>
 
                {/* Anchor Annotation Fragments */}
@@ -247,11 +247,11 @@ export const ObservationSection: React.FC = () => {
                </motion.div>
              </div>
 
-             <div className="max-w-md pt-8 md:ml-[32vw] border-l border-zinc-100 pl-8 md:pl-12 space-y-8">
-                <p className="text-[11px] md:text-sm font-light text-zinc-500 leading-[2] uppercase tracking-[0.25em]">
+             <div className="max-w-md pt-8 md:ml-[32vw] border-l border-zinc-100 pl-8 md:pl-12 space-y-12">
+                <p className="text-[11px] md:text-sm font-light text-zinc-500 leading-[2.2] uppercase tracking-[0.3em]">
                   A documented exploration <br />
-                  of <span className="inline-block whitespace-nowrap text-zinc-900 font-medium italic">digital trust</span>, <span className="inline-block whitespace-nowrap text-zinc-900 font-medium">behavioral triggers</span>, <br />
-                  and <span className="inline-block whitespace-nowrap text-zinc-900 font-medium">systemic ambiguity</span>.
+                  of <span className="inline-block whitespace-nowrap text-zinc-950 font-semibold italic">digital trust</span>, <span className="inline-block whitespace-nowrap text-zinc-950 font-semibold">behavioral triggers</span>, <br />
+                  and <span className="inline-block whitespace-nowrap text-zinc-950 font-semibold">systemic ambiguity</span>.
                 </p>
 
                 <div className="flex items-center gap-4 opacity-70 transition-opacity hover:opacity-100">
