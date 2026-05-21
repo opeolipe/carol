@@ -26,16 +26,16 @@ export const CinematicHero: React.FC = () => {
   });
 
   const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.02]);
-  const blurValue = useTransform(scrollYProgress, [0, 0.6], [0, 8]);
-  const signalClarity = useTransform(scrollYProgress, [0, 0.5], [0.05, 0.2]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.01]); // Even more subtle scale
+  const blurValue = useTransform(scrollYProgress, [0, 0.6], [0, 4]); // Reduced Max Blur
+  const signalClarity = useTransform(scrollYProgress, [0, 0.5], [0.03, 0.15]);
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setStep(1), 3000), // Scene 1: Silence -> "The internet remembers everything."
-      setTimeout(() => setStep(2), 12000), // Scene 2: "Most people ignore the signals."
-      setTimeout(() => setStep(3), 21000), // Scene 3: "I couldn’t."
-      setTimeout(() => setStep(4), 30000), // Scene 4: Reveal Identity
+      setTimeout(() => setStep(1), 4000), // Step 1: Initial silence extended to 4s
+      setTimeout(() => setStep(2), 15000), // Gap of 11s
+      setTimeout(() => setStep(3), 26000), // Gap of 11s
+      setTimeout(() => setStep(4), 40000), // Gap of 14s (Significant pause before reveal)
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -50,22 +50,22 @@ export const CinematicHero: React.FC = () => {
       >
         {/* Deep Ambient Layers */}
         <div 
-          className="absolute inset-0 opacity-[0.4] blur-[140px]"
+          className="absolute inset-0 opacity-[0.35] blur-[150px]"
           style={{
-            background: 'radial-gradient(circle at 10% 20%, #f1f5f9 0%, transparent 60%), radial-gradient(circle at 90% 80%, #fefce8 0%, transparent 60%)'
+            background: 'radial-gradient(circle at 15% 15%, #f1f5f9 0%, transparent 70%), radial-gradient(circle at 85% 85%, #fefce8 0%, transparent 70%)'
           }}
         />
         
-        {/* Drifting Light Fields */}
+        {/* Drifting Light Fields - Decelerated for stillness */}
         <motion.div 
           animate={{ 
-            x: [0, 20, -10, 0], 
-            y: [0, -15, 25, 0],
+            x: [0, 10, -5, 0], 
+            y: [0, -5, 10, 0],
           }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="absolute inset-0 opacity-[0.3] blur-[160px]"
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 opacity-[0.25] blur-[180px]"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 50%)'
+            background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 60%)'
           }}
         />
 
@@ -154,10 +154,23 @@ export const CinematicHero: React.FC = () => {
                   transition={{ delay: 1.5, duration: 2 }}
                   className="space-y-4"
                 >
-                  <div className="w-12 h-px bg-zinc-300 mx-auto" />
-                  <p className="text-xs md:text-sm uppercase tracking-[0.5em] font-medium text-zinc-400">
+                  <div className="w-12 h-px bg-zinc-200 mx-auto opacity-50" />
+                  <motion.p 
+                    animate={{ 
+                      opacity: [0.4, 0.35, 0.4, 0.2, 0.4],
+                      x: [0, -1, 0, 1, 0],
+                    }}
+                    transition={{ 
+                      duration: 4, 
+                      repeat: Infinity, 
+                      repeatType: "reverse",
+                      times: [0, 0.45, 0.5, 0.51, 1],
+                      ease: "linear" 
+                    }}
+                    className="text-xs md:text-sm uppercase tracking-[0.5em] font-medium text-zinc-400 select-none"
+                  >
                     building thoughtful things for a noisy internet
-                  </p>
+                  </motion.p>
                 </motion.div>
               </motion.div>
             )}
