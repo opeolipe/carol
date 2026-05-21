@@ -7,29 +7,78 @@ const posts = (await getCollection('blog')).sort(
 );
 ---
 
-<BaseLayout title="Blog">
-  <h1 class="text-3xl font-bold tracking-tight mb-12">Writing</h1>
-  <div class="grid gap-12">
-    {posts.length > 0 ? (
-      posts.map((post) => (
-        <article class="group">
-          <time datetime={post.data.date.toISOString()} class="text-sm text-slate-500 font-mono mb-2 block">
-            {post.data.date.toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </time>
-          <h2 class="text-xl font-bold tracking-tight mb-2 group-hover:text-slate-600 transition-colors">
-            <a href={`${import.meta.env.BASE_URL}/blog/${post.slug}`}>{post.data.title}</a>
-          </h2>
-          <p class="text-slate-600 leading-relaxed max-w-2xl">
-            {post.data.description}
-          </p>
-        </article>
-      ))
-    ) : (
-      <p class="text-slate-500 italic">No posts yet. Check back soon.</p>
-    )}
+<BaseLayout title="Archive_Investigations" description="A living archive of digital systemic investigations and behavioral observations.">
+  <div class="max-w-7xl mx-auto px-8 md:px-24 pt-32 pb-64">
+    <header class="space-y-6 mb-24 md:mb-32">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-px bg-zinc-950" />
+        <span class="text-[9px] font-mono uppercase tracking-[0.6em] text-zinc-950 font-black">Archive_Dossier_Stream</span>
+      </div>
+      <h1 class="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-zinc-950 leading-[0.85] uppercase">
+        Investigations
+      </h1>
+      <p class="text-[clamp(1.1rem,2vw,2.2rem)] font-light text-zinc-400 italic leading-none tracking-tight">
+        Observing the internet's <span class="text-zinc-900 font-medium">drift</span> and behavioral architecture.
+      </p>
+    </header>
+
+    <div class="space-y-32">
+      {posts.length > 0 ? (
+        posts.map((post) => (
+          <article class="group relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-start border-t border-zinc-100 pt-16 hover:border-zinc-950 transition-all duration-1000">
+            <div class="lg:col-span-3 space-y-4">
+              <div class="flex items-center gap-2">
+                <div class={`w-1.5 h-1.5 rounded-full transition-colors duration-1000 ${
+                  post.data.signalState === 'DRIFTING' ? 'bg-purple-500 animate-pulse' : 
+                  post.data.signalState === 'UNRESOLVED' ? 'bg-amber-500 animate-pulse' :
+                  post.data.signalState === 'ACTIVE' ? 'bg-emerald-500' : 'bg-zinc-200'
+                }`} />
+                <span class="text-[7px] font-mono uppercase tracking-[0.5em] text-zinc-300 group-hover:text-zinc-600 transition-colors duration-1000">
+                  {post.data.investigationId || "TRC-7429"} 
+                  <span class="ml-2 opacity-40">[{post.data.signalState}]</span>
+                </span>
+              </div>
+              <time datetime={post.data.date.toISOString()} class="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">
+                {post.data.date.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </time>
+              {post.data.signalCategory && (
+                <div class="pt-2">
+                   <span class="px-3 py-1 bg-zinc-50 border border-zinc-100 text-[6px] font-mono text-zinc-400 uppercase tracking-widest rounded-full">{post.data.signalCategory}</span>
+                </div>
+              )}
+            </div>
+            
+            <div class="lg:col-span-9 space-y-6">
+              <h2 class="text-[clamp(1.8rem,4vw,3.5rem)] font-bold tracking-tighter leading-none uppercase group-hover:tracking-tight transition-all duration-1000">
+                <a href={`${import.meta.env.BASE_URL}/blog/${post.slug}`} class="block py-2">
+                  {post.data.title}
+                </a>
+              </h2>
+              <p class="text-[clamp(1rem,1.4vw,1.4rem)] font-light text-zinc-400 leading-relaxed max-w-2xl group-hover:text-zinc-600 transition-colors duration-1000">
+                {post.data.description}
+              </p>
+              <div class="pt-4 flex items-center gap-6 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-1000">
+                 <div class="w-12 h-px bg-zinc-950" />
+                 <span class="text-[8px] font-mono uppercase tracking-[0.6em] text-zinc-950 font-black">View_Investigation_Trace →</span>
+              </div>
+            </div>
+            
+            {/* Ambient Background Signal */}
+            <div class="absolute right-0 top-0 text-[12vw] font-black text-zinc-950/[0.015] pointer-events-none select-none tracking-tighter uppercase leading-none mt-12">
+               {post.data.signalCategory || "SIGNAL"}
+            </div>
+          </article>
+        ))
+      ) : (
+        <div class="py-24 text-center space-y-4">
+           <div class="w-px h-12 bg-zinc-100 mx-auto" />
+           <p class="text-[10px] font-mono text-zinc-300 uppercase tracking-widest italic">The archive is currently dormant. No active investigations found.</p>
+        </div>
+      )}
+    </div>
   </div>
 </BaseLayout>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 
-const NarrativeStep = ({ text, delay, duration = 2 }: { text: string; delay: number; duration?: number }) => (
+const NarrativeStep = ({ text, delay, duration = 3 }: { text: string; delay: number; duration?: number }) => (
   <motion.p
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -20 }}
+    initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+    exit={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
     transition={{ 
       duration, 
       delay, 
@@ -22,10 +22,8 @@ export const CinematicHero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Interaction Physics: Slow, deliberate, and intelligent tracking
-  const mouseXTarget = useRef(0);
-  const mouseYTarget = useRef(0);
-  const mouseX = useSpring(0, { stiffness: 8, damping: 60 });
-  const mouseY = useSpring(0, { stiffness: 8, damping: 60 });
+  const mouseX = useSpring(0, { stiffness: 4, damping: 80 }); // Even slower for more "weight"
+  const mouseY = useSpring(0, { stiffness: 4, damping: 80 });
   
   // Stillness Cycle Logic: Periodic dormancy in environmental reaction
   const [isDormant, setIsDormant] = useState(false);
@@ -33,13 +31,11 @@ export const CinematicHero: React.FC = () => {
   useEffect(() => {
     const cycle = setInterval(() => {
       setIsDormant(true);
-      // Return to center during dormancy
-      mouseX.set(0);
-      mouseY.set(0);
-      setTimeout(() => setIsDormant(false), 9000); // 9s of stillness
-    }, 28000); // every 28s - longer silence
+      // Wait for 10s of quiet, then wake up
+      setTimeout(() => setIsDormant(false), 10000); 
+    }, 32000); // 32s active, 10s dormant cycle
     return () => clearInterval(cycle);
-  }, [mouseX, mouseY]);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -47,13 +43,13 @@ export const CinematicHero: React.FC = () => {
   });
 
   const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.05]); 
-  const blurValue = useTransform(scrollYProgress, [0, 0.6], [0, 8]); 
-  const signalClarity = useTransform(scrollYProgress, [0, 0.5], [0.02, 0.15]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.03]); // Reduced scale for restraint
+  const blurValue = useTransform(scrollYProgress, [0, 0.6], [0, 6]); 
+  const signalClarity = useTransform(scrollYProgress, [0, 0.5], [0.03, 0.12]);
   
-  // Mobile Environmental Response (Scroll & Gesture)
-  const mobileDriftY = useTransform(scrollYProgress, [0, 1], [0, 60]);
-  const mobileDriftX = useTransform(scrollYProgress, [0, 1], [0, 15]);
+  // Mobile Environmental Response (Scroll & Gesture - more subtle)
+  const mobileDriftY = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  const mobileDriftX = useTransform(scrollYProgress, [0, 0.5, 1], [0, 8, 0]);
 
   useEffect(() => {
     const timers = [
@@ -66,18 +62,24 @@ export const CinematicHero: React.FC = () => {
     ];
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDormant) return;
-      // Normalizing with softer range
-      const x = (e.clientX / window.innerWidth - 0.5) * 1.2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 1.2;
+      if (isDormant) {
+        // Softly center during dormancy
+        mouseX.set(0);
+        mouseY.set(0);
+        return;
+      }
+      // Narrower range for more restraint
+      const x = (e.clientX / window.innerWidth - 0.5) * 0.8;
+      const y = (e.clientY / window.innerHeight - 0.5) * 0.8;
       mouseX.set(x);
       mouseY.set(y);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (isDormant || !e.touches[0]) return;
-      const x = (e.touches[0].clientX / window.innerWidth - 0.5) * 0.8;
-      const y = (e.touches[0].clientY / window.innerHeight - 0.5) * 0.8;
+      // Damped touch movement for cinematic feel
+      const x = (e.touches[0].clientX / window.innerWidth - 0.5) * 0.4;
+      const y = (e.touches[0].clientY / window.innerHeight - 0.5) * 0.4;
       mouseX.set(x);
       mouseY.set(y);
     };
@@ -92,18 +94,18 @@ export const CinematicHero: React.FC = () => {
     };
   }, [mouseX, mouseY, isDormant]);
 
-  // Motion Hierarchy & Signal Gravity (Restrained Values)
-  // Level 1: Deep Ambient (Reacts least)
-  const ambientX = useTransform(mouseX, [-1, 1], [-8, 8]);
-  const ambientY = useTransform(mouseY, [-1, 1], [-8, 8]);
+  // Motion Hierarchy & Signal Gravity (Highly Restrained Values)
+  // Level 1: Deep Ambient (Reacts least - almost dormant)
+  const ambientX = useTransform(mouseX, [-1, 1], [-4, 4]);
+  const ambientY = useTransform(mouseY, [-1, 1], [-4, 4]);
   
-  // Level 2: Drifting Fields (Secondary Motion)
-  const driftX = useTransform(mouseX, [-1, 1], [15, -15]);
-  const driftY = useTransform(mouseY, [-1, 1], [15, -15]);
+  // Level 2: Drifting Fields (Secondary Atmospheric Motion)
+  const driftX = useTransform(mouseX, [-1, 1], [10, -10]);
+  const driftY = useTransform(mouseY, [-1, 1], [10, -10]);
   
-  // Level 3: Foreground Typography (Direct Focus)
-  const typographyX = useTransform(mouseX, [-1, 1], [4, -4]);
-  const typographyY = useTransform(mouseY, [-1, 1], [4, -4]);
+  // Level 3: Foreground Typography (Subtle Emotional Response)
+  const typographyX = useTransform(mouseX, [-1, 1], [3, -3]);
+  const typographyY = useTransform(mouseY, [-1, 1], [3, -3]);
 
   return (
     <div ref={containerRef} className="relative h-[250vh] w-full bg-[#fbfbf9] overflow-hidden">
@@ -121,26 +123,27 @@ export const CinematicHero: React.FC = () => {
         className="fixed inset-0 z-0 pointer-events-none"
       >
         <div 
-          className="absolute inset-0 opacity-[0.25] blur-[150px]"
+          className="absolute inset-0 opacity-[0.22] blur-[150px]"
           style={{
-            background: 'radial-gradient(circle at 15% 15%, #f1f5f9 0%, transparent 65%), radial-gradient(circle at 85% 85%, #fefce8 0%, transparent 65%)'
+            background: 'radial-gradient(circle at 10% 10%, #f1f5f9 0%, transparent 70%), radial-gradient(circle at 90% 90%, #fefce8 0%, transparent 70%)'
           }}
         />
         
         {/* Level 2: Drifting Light Fields (Mobile-Scroll Optimized) */}
         <motion.div 
-          animate={isDormant ? { x: 0, y: 0 } : { 
-            x: [0, 10, -5, 0], 
-            y: [0, -5, 10, 0],
+          animate={isDormant ? { scale: 0.95, opacity: 0.1 } : { 
+            x: [0, 8, -4, 0], 
+            y: [0, -4, 8, 0],
+            opacity: [0.12, 0.18, 0.12]
           }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 75, repeat: Infinity, ease: "linear" }}
           style={{ 
             x: driftX, 
-            y: useTransform([driftY, mobileDriftY], ([dy, mdy]) => (dy as number) + (mdy as number) * 0.5) 
+            y: useTransform([driftY, mobileDriftY], ([dy, mdy]) => (dy as number) + (mdy as number) * 0.4) 
           }}
-          className="absolute inset-0 opacity-[0.15] blur-[180px]"
+          className="absolute inset-0 opacity-[0.15] blur-[200px] transition-all duration-[3000ms]"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 60%)'
+            background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 65%)'
           }}
         />
 
@@ -150,14 +153,14 @@ export const CinematicHero: React.FC = () => {
             opacity: signalClarity,
             y: mobileDriftY,
             x: mobileDriftX,
-            rotate: useTransform(scrollYProgress, [0, 1], [12, 18]) 
+            rotate: useTransform(scrollYProgress, [0, 1], [15, 20]) 
           }}
           className="absolute inset-0 flex items-center justify-center overflow-hidden"
         >
-          <div className="w-full h-full noise-texture mix-blend-overlay scale-[1.8] opacity-30" />
+          <div className="w-full h-full noise-texture mix-blend-overlay scale-[2] opacity-25" />
         </motion.div>
         
-        <div className="absolute inset-0 noise-texture opacity-[0.02]" />
+        <div className="absolute inset-0 noise-texture opacity-[0.015]" />
       </motion.div>
 
       {/* Narrative Sequence Foreground */}

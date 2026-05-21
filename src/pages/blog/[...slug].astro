@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
@@ -11,44 +11,91 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await entry.render();
+
+import { 
+  InvestigationHeader, 
+  InvestigationConclusion,
+  ReadingEnvironment,
+  ArchivePathway
+} from '../../components/InvestigationReport';
+
+const metadata = [
+  { label: "Investigation_ID", value: entry.data.investigationId || "TRC-7429" },
+  { label: "Signal_Category", value: entry.data.signalCategory || "Atmospheric" },
+  { label: "Archive_State", value: entry.data.archiveState || "Stabilized" },
+  { label: "Observation_Date", value: entry.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) },
+];
+
+// Fetch related traces
+let relatedTracesData = [];
+if (entry.data.relatedTraces && entry.data.relatedTraces.length > 0) {
+  for (const slug of entry.data.relatedTraces) {
+    const traceEntry = await getEntry('blog', slug);
+    if (traceEntry) {
+      relatedTracesData.push({
+        title: traceEntry.data.title,
+        slug: traceEntry.slug,
+        investigationId: traceEntry.data.investigationId,
+        category: traceEntry.data.signalCategory
+      });
+    }
+  }
+} else {
+  // Fallback: pick any 2 from collection
+  const allPosts = await getCollection('blog');
+  relatedTracesData = allPosts
+    .filter(p => p.slug !== entry.slug)
+    .slice(0, 2)
+    .map(p => ({
+      title: p.data.title,
+      slug: p.slug,
+      investigationId: p.data.investigationId,
+      category: p.data.signalCategory
+    }));
+}
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description} type="article">
-  <article class="prose prose-slate max-w-none">
-    <header class="mb-12">
-      <time datetime={entry.data.date.toISOString()} class="text-sm text-slate-500 font-mono mb-4 block">
-        {entry.data.date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}
-      </time>
-      <h1 class="text-4xl font-bold tracking-tight mb-4">{entry.data.title}</h1>
-      <p class="text-xl text-slate-600 leading-relaxed italic">{entry.data.description}</p>
-    </header>
-    
-    <div class="blog-content">
-      <Content />
+  <ReadingEnvironment client:load slug={entry.slug} state={entry.data.signalState}>
+    <div class="max-w-7xl mx-auto px-8 md:px-24 pt-32 pb-[10vh]">
+      <article class="relative z-10">
+        <InvestigationHeader 
+          title={entry.data.title}
+          description={entry.data.description}
+          metadata={metadata}
+          state={entry.data.signalState}
+          client:load
+        />
+        
+        <div class="investigation-content">
+          <Content />
+        </div>
+
+        <InvestigationConclusion client:load>
+          The investigation remains open. The signals recorded suggest a deeper pattern of behavioral drift that requires further long-term observation. Traces will be updated as new data fragments emerge from the archive.
+        </InvestigationConclusion>
+
+        <ArchivePathway client:load traces={relatedTracesData} />
+      </article>
     </div>
-  </article>
+  </ReadingEnvironment>
 </BaseLayout>
 
 <style is:global>
-  /* Custom prose-like styles since we aren't using @tailwind/typography by default 
-     to keep dependencies minimal and zero-inline-style strict. */
-  .blog-content h2 {
-    @apply text-2xl font-bold tracking-tight mt-12 mb-4;
+  /* Editorial Investigation Typography */
+  .investigation-content {
+    @apply mx-auto max-w-none;
   }
-  .blog-content p {
-    @apply leading-relaxed mb-6 text-slate-800;
+  .investigation-content p {
+    @apply text-[1.1rem] md:text-[1.4rem] font-light text-zinc-600 leading-relaxed mb-8 md:mb-12 max-w-3xl;
   }
-  .blog-content ul {
-    @apply list-disc list-inside mb-6 text-slate-800;
+  .investigation-content h2 {
+    @apply text-[2rem] md:text-[3rem] font-bold tracking-tighter uppercase mt-24 mb-8 text-zinc-950;
   }
-  .blog-content li {
-    @apply mb-2;
+  .investigation-content ul {
+    @apply space-y-4 mb-12 border-l border-zinc-100 pl-8;
   }
-  .blog-content code {
-    @apply text-[0.8rem] border border-zinc-200 px-2 py-1 text-zinc-500 uppercase tracking-tight font-mono;
+  .investigation-content li {
+    @apply text-[1rem] md:text-[1.2rem] font-mono uppercase tracking-widest text-zinc-400;
   }
 </style>

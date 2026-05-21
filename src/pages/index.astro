@@ -4,6 +4,13 @@ import { CinematicHero } from '../components/CinematicHero';
 import { ObservationSection } from '../components/ObservationSection';
 import { Act3Section } from '../components/Act3Section';
 import { Act4Section } from '../components/Act4Section';
+import { CurrentSignals } from '../components/CurrentSignals';
+import { getCollection } from 'astro:content';
+
+const signals = await getCollection('signals');
+const sortedSignals = signals
+  .sort((a, b) => b.data.timestamp.getTime() - a.data.timestamp.getTime())
+  .slice(0, 3);
 ---
 
 <BaseLayout title="Caroline Ratuolivia" minimal={true}>
@@ -15,11 +22,20 @@ import { Act4Section } from '../components/Act4Section';
 
   <Act4Section client:load />
 
+  <div class="px-8 md:px-24 max-w-7xl mx-auto pb-32">
+     <CurrentSignals client:load signals={sortedSignals.map(s => s.data)} />
+  </div>
+
   <footer class="bg-zinc-50 text-zinc-400 py-32 px-12 md:px-24 border-t border-zinc-100">
     <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16">
       <div class="space-y-6">
         <span class="text-xs font-bold uppercase tracking-[0.4em] text-zinc-900 block">Caroline Ratuolivia</span>
-        <p class="text-sm font-light max-w-xs leading-relaxed">Building thoughtful things for a noisy internet.</p>
+        <p class="text-sm font-light max-w-xs leading-relaxed italic text-zinc-500 underline decoration-zinc-100 underline-offset-8">Documentation of how the archive thinks.</p>
+        <div class="pt-4 flex flex-col gap-4">
+          <a href={`${import.meta.env.BASE_URL}/about`} class="text-[9px] uppercase tracking-[0.6em] text-zinc-950 font-black hover:tracking-[0.8em] transition-all duration-700 interactive">System Profile →</a>
+          <a href={`${import.meta.env.BASE_URL}/blog`} class="text-[9px] uppercase tracking-[0.6em] text-zinc-950 font-black hover:tracking-[0.8em] transition-all duration-700 interactive">Investigations →</a>
+          <a href={`${import.meta.env.BASE_URL}/notes`} class="text-[9px] uppercase tracking-[0.6em] text-zinc-950 font-black hover:tracking-[0.8em] transition-all duration-700 interactive">Field Notes →</a>
+        </div>
       </div>
       <div class="flex gap-16">
         <div class="space-y-6">

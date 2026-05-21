@@ -34,32 +34,33 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
   const y = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [50, 0, 0, -50]); 
   const scale = useTransform(scrollYProgress, [0.42, 0.5, 0.58], [0.97, 1, 0.97]);
 
-  // Exploration Memory: Soften if already viewed
-  const archiveDim = isViewed && !isInView ? 0.2 : 1;
-  const archiveBlur = isViewed ? 2 : 0;
-  const archiveSaturation = isViewed ? 'grayscale(0.4)' : 'none';
+  // Exploration Memory: Soften and stabilize if already viewed
+  const archiveDim = isViewed && !isInView ? 0.15 : 1;
+  const archiveBlur = isViewed ? 3 : 0;
+  const archiveSaturation = isViewed ? 'grayscale(0.6)' : 'none';
+  const archiveContrast = isViewed ? 'contrast(0.95)' : 'contrast(1)';
 
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        // Asymmetrical, non-linear sequencing based on archive depth
-        staggerChildren: index === 1 ? 0.35 : (index === 2 ? 0.25 : 0.45), 
-        delayChildren: 0.5,
+        // Asymmetrical, non-linear sequencing with organic pauses
+        staggerChildren: index === 1 ? 0.4 : (index === 2 ? 0.3 : 0.6), 
+        delayChildren: index === 1 ? 0.3 : 0.6,
         ease: [0.22, 1, 0.36, 1]
       }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 35, filter: 'blur(10px)' },
+    hidden: { opacity: 0, y: 40, filter: 'blur(12px)' },
     show: { 
       opacity: 1, 
       y: 0, 
       filter: 'blur(0px)',
       transition: { 
-        duration: 2.4, 
+        duration: 2.8, 
         ease: [0.22, 1, 0.36, 1] 
       } 
     }
@@ -70,12 +71,12 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
       ref={ref}
       style={{ 
         opacity, 
-        filter: useTransform(blur, (v) => `blur(${v + archiveBlur}px) ${archiveSaturation}`), 
+        filter: useTransform(blur, (v) => `blur(${v + archiveBlur}px) ${archiveSaturation} ${archiveContrast}`), 
         y, 
         scale,
-        transition: { duration: 2, ease: [0.22, 1, 0.36, 1] }
+        transition: { duration: 2.5, ease: [0.22, 1, 0.36, 1] }
       }}
-      className="min-h-[110vh] flex flex-col items-center justify-center py-32 md:py-64 px-8 md:px-24 mb-[5vh] md:mb-[15vh]"
+      className="min-h-[110vh] flex flex-col items-center justify-center py-32 md:py-64 px-8 md:px-24 mb-[8vh] md:mb-[15vh]"
     >
       <motion.div 
         variants={container}
@@ -109,12 +110,12 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
                  <span className="text-[10px] font-mono tracking-[0.3em] text-zinc-300 uppercase">{timestamp}</span>
                  {isViewed && (
                    <motion.div 
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 0.4 }}
-                     className="ml-auto md:ml-4 flex items-center gap-2"
+                     initial={{ opacity: 0, x: -10 }}
+                     animate={{ opacity: 0.3, x: 0 }}
+                     className="ml-auto md:ml-6 flex items-center gap-3 transition-opacity duration-1000"
                    >
-                     <div className="w-1 h-1 rounded-full bg-zinc-400" />
-                     <span className="text-[7px] font-mono tracking-widest text-zinc-400 uppercase">Archive_Stabilized</span>
+                     <div className="w-[1px] h-3 bg-zinc-200" />
+                     <span className="text-[7px] font-mono tracking-[0.5em] text-zinc-300 uppercase">ARCHIVE_SETTLED</span>
                    </motion.div>
                  )}
               </div>
@@ -156,33 +157,33 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
                 </div>
              </motion.div>
 
-             <div className="space-y-16 md:space-y-24 md:pt-48">
+             <div className="space-y-20 md:space-y-32 md:pt-48">
                 {annotations?.map((note, i) => (
                   <motion.div 
                     key={i}
                     variants={{
-                      hidden: { opacity: 0, x: -15, filter: 'blur(6px)' },
+                      hidden: { opacity: 0, x: -20, filter: 'blur(8px)' },
                       show: { 
                         opacity: 1, 
                         x: 0,
                         filter: 'blur(0px)',
                         transition: { 
-                          delay: 1.2 + (i * 0.5) + (Math.random() * 0.4), // Highly non-linear organic sequencing
-                          duration: 2.8, 
+                          delay: 1.5 + (i === 1 ? 0.8 : 0.4) + (Math.random() * 0.5), // Diverse organic response
+                          duration: 3, 
                           ease: [0.22, 1, 0.36, 1] 
                         } 
                       }
                     }}
-                    className={`space-y-4 relative group max-w-[320px] md:max-w-sm ${i % 2 === 0 ? 'ml-0' : 'ml-4 md:ml-12'}`}
+                    className={`space-y-4 relative group max-w-[300px] md:max-w-sm transition-all duration-1000 ${i % 2 === 0 ? 'ml-0' : 'ml-6 md:ml-16'} ${isViewed ? 'opacity-60 grayscale-[0.2]' : 'opacity-100'}`}
                   >
-                    <div className="flex items-center gap-3">
-                       <div className="w-1 h-1 bg-zinc-200 rounded-full group-hover:bg-zinc-950 transition-all duration-1000" />
-                       <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-200 block">trace_v{i+1}</span>
+                    <div className="flex items-center gap-4">
+                       <span className={`text-[8px] font-mono uppercase tracking-[0.4em] transition-colors duration-1000 ${isViewed ? 'text-zinc-200' : 'text-zinc-300 group-hover:text-zinc-950'}`}>trace_v{i+1}</span>
+                       <div className={`flex-grow h-px transition-all duration-1000 ${isViewed ? 'bg-zinc-50' : 'bg-zinc-100 group-hover:bg-zinc-950/10'}`} />
                     </div>
-                    <p className="text-[12px] md:text-[14px] font-light text-zinc-500 leading-relaxed md:leading-[1.7] pl-5 border-l border-zinc-50 group-hover:border-zinc-300 group-hover:text-zinc-900 transition-all duration-1000">
+                    <p className={`text-[12px] md:text-[14px] font-light leading-relaxed md:leading-[1.8] pl-6 border-l transition-all duration-1000 ${isViewed ? 'text-zinc-300 border-zinc-100' : 'text-zinc-500 border-zinc-50 group-hover:border-zinc-300 group-hover:text-zinc-900'}`}>
                       {note}
                     </p>
-                    <div className="absolute -left-4 top-0 text-[5px] font-mono text-zinc-100 opacity-0 group-hover:opacity-100 transition-all duration-1000 translate-x-1 group-hover:translate-x-0">
+                    <div className="absolute -left-6 top-1 text-[5px] font-mono text-zinc-200 opacity-0 group-hover:opacity-100 transition-all duration-1000 translate-x-2 group-hover:translate-x-0">
                        ARCHIVE_ID_{id.replace('-', '')}_{i}
                     </div>
                   </motion.div>

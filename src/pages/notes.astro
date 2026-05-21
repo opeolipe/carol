@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { FieldNotesList } from '../components/FieldNotesList';
+
+const rawNotes = await getCollection('fieldNotes');
+const sortedNotes = rawNotes.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const notesData = sortedNotes.map(note => ({
+  title: note.data.title,
+  category: note.data.category,
+  date: note.data.date.toISOString(),
+  signalState: note.data.signalState,
+  coordinates: note.data.coordinates,
+  observation: note.data.observation,
+  insight: note.data.insight,
+  unresolvedSignal: note.data.unresolvedSignal,
+  pattern: note.data.pattern,
+  slug: note.slug,
+}));
+---
+
+<BaseLayout 
+  title="Archive_Field_Notes" 
+  description="Quick, sharp behavioral fragments and unfinished thoughts inside a living investigative archive."
+>
+  <div class="max-w-7xl mx-auto px-8 md:px-24 pt-32 pb-64">
+    <header class="space-y-6 mb-24 md:mb-32">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-px bg-zinc-950" />
+        <span class="text-[9px] font-mono uppercase tracking-[0.6em] text-zinc-950 font-black">Live_Observation_Notebook</span>
+      </div>
+      <h1 class="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-zinc-950 leading-[0.85] uppercase">
+        Field Notes
+      </h1>
+      <p class="text-[clamp(1.1rem,2vw,2.2rem)] font-light text-zinc-400 italic leading-none tracking-tight max-w-4xl">
+        Unfinished research, sharp <span class="text-zinc-900 font-medium">behavioral fragments</span>, and unresolved signals observed across the modern digital sphere. No polished essays. Just raw traces.
+      </p>
+    </header>
+
+    <FieldNotesList client:load initialNotes={notesData} />
+    
+    <!-- Footer Watermark Grid -->
+    <div class="mt-48 pointer-events-none opacity-[0.03] select-none text-center h-24 border-t border-zinc-950/10 flex items-center justify-between">
+       <span class="text-[8px] font-mono uppercase tracking-[0.8em]">SYSTEM_STABLE_V1</span>
+       <span class="text-[8px] font-mono uppercase tracking-[0.8em]">© CAROLINE_TERMINAL_2026</span>
+    </div>
+  </div>
+</BaseLayout>
