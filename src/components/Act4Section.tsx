@@ -9,7 +9,9 @@ interface SideQuest {
   status: 'ACTIVE' | 'ARCHIVED' | 'IN_PROGRESS' | 'RECENT';
   intensity: number; // 1-5, drives visual scale/pulse
   date: string;
+  lastDetected?: string;
   isNew?: boolean;
+  isIrrational?: boolean;
   observation: string;
   experiment: string;
   discovery: string;
@@ -27,9 +29,9 @@ const SIDE_QUESTS: SideQuest[] = [
     intensity: 4,
     date: "2026.04",
     isNew: true,
-    observation: "Urgency changes the way humans read interfaces.",
-    experiment: "Built a friction-based authentication system.",
-    discovery: "Safety requires a specific kind of 'designed' pause.",
+    observation: "Interfaces manufacture trust faster than logic can question it.",
+    experiment: "Urgency and familiarity create cognitive blind spots.",
+    discovery: "Safety requires a designed pause.",
     x: 20,
     y: 20
   },
@@ -41,9 +43,9 @@ const SIDE_QUESTS: SideQuest[] = [
     status: "ARCHIVED",
     intensity: 2,
     date: "2026.02",
-    observation: "Most digital trust is built on familiarity, not truth.",
-    experiment: "Generated 100 'safe' interfaces using deceptive patterns.",
-    discovery: "Deception is easier when the typography is legible.",
+    observation: "Visual safety masks structural risk.",
+    experiment: "Identified 100 deceptive patterns in 'safe' flows.",
+    discovery: "Deception is easier when typography is legible.",
     x: 75,
     y: 15
   },
@@ -55,9 +57,9 @@ const SIDE_QUESTS: SideQuest[] = [
     status: "ACTIVE",
     intensity: 5,
     date: "2026.05",
-    observation: "Scams often hide in the spaces where UX is most helpful.",
-    experiment: "A tool that visualizes signal interference in trust flows.",
-    discovery: "Systems break where the human feels most supported.",
+    observation: "Scams hide in the spaces where UX is most helpful.",
+    experiment: "Visualizing signal interference in trust flows.",
+    discovery: "Systems break where the human feels supported.",
     x: 48,
     y: 52
   },
@@ -69,9 +71,9 @@ const SIDE_QUESTS: SideQuest[] = [
     status: "IN_PROGRESS",
     intensity: 3,
     date: "2026.05",
-    observation: "Digital rituals create blind spots in security.",
-    experiment: "Mapped the muscle memory of checkout flows.",
-    discovery: "Complexity is ignored if the rhythm is consistent.",
+    observation: "Complexity is ignored if the rhythm is consistent.",
+    experiment: "Mapping the muscle memory of security rituals.",
+    discovery: "Rituals create exploitable blind spots.",
     x: 18,
     y: 78
   },
@@ -84,10 +86,26 @@ const SIDE_QUESTS: SideQuest[] = [
     intensity: 4,
     date: "2026.05",
     observation: "Pressure reveals the hidden structure of trust.",
-    experiment: "A time-decaying interface prototype.",
-    discovery: "Clarity disappears when the clock starts ticking.",
+    experiment: "Time-decaying interface architecture.",
+    discovery: "Clarity disappears when the clock starts.",
     x: 85,
     y: 82
+  },
+  {
+    id: "SQ-06",
+    title: "Anomaly_06",
+    type: "SIGNAL",
+    category: "BEHAVIOR",
+    status: "RECENT",
+    intensity: 1,
+    date: "24:00",
+    lastDetected: "ERR_SIGNAL_LOST",
+    isIrrational: true,
+    observation: "Some traces do not want to be mapped.",
+    experiment: "Isolating the source of the signal drift.",
+    discovery: "The system creates its own resistance.",
+    x: 55,
+    y: 35
   }
 ];
 
@@ -131,28 +149,28 @@ export const Act4Section: React.FC = () => {
     >
       <motion.div style={{ opacity }} className="max-w-7xl mx-auto h-full flex flex-col">
         {/* Header Metadata */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-24 relative z-10">
-           <div className="space-y-8">
-              <div className="flex items-center gap-4">
-                 <span className="text-[10px] font-mono tracking-[0.8em] text-zinc-400 font-bold uppercase">Act IV</span>
-                 <div className="w-12 h-px bg-zinc-100" />
-                 <span className="text-[10px] font-mono text-zinc-950 uppercase tracking-[0.4em] font-black italic">Active_Signals_Detected</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-32 relative z-10">
+           <div className="space-y-12">
+              <div className="flex items-center gap-6">
+                 <span className="text-[10px] font-mono tracking-[1em] text-zinc-400 font-bold uppercase">Act IV</span>
+                 <div className="w-16 h-px bg-zinc-200" />
+                 <span className="text-[11px] font-mono text-zinc-950 uppercase tracking-[0.5em] font-black italic">Active_Signals_Detected</span>
               </div>
-              <h2 className="text-[clamp(3.5rem,10vw,8rem)] font-black tracking-[-0.08em] text-zinc-950 leading-[0.85] uppercase">
+              <h2 className="text-[clamp(4.5rem,12vw,12rem)] font-black tracking-[-0.08em] text-zinc-950 leading-[0.75] uppercase">
                 Investigation <br />
-                <span className="text-zinc-200">Archive</span>
+                <span className="text-zinc-200 block mt-2">Archive</span>
               </h2>
            </div>
            
-           <div className="max-w-sm space-y-6">
-              <p className="text-[13px] font-medium text-zinc-600 leading-relaxed uppercase tracking-[0.1em]">
+           <div className="max-w-md space-y-8">
+              <p className="text-[14px] md:text-[16px] font-medium text-zinc-950 leading-tight uppercase tracking-tight">
                 The noisy internet is a system <br />
-                of evolving traces. These are the <br />
-                investigations in progress.
+                of evolving traces. These are <br />
+                the investigations in progress.
               </p>
-              <div className="flex items-center gap-4 border-t border-zinc-50 pt-4">
-                 <div className="w-2 h-2 rounded-full bg-zinc-950 animate-ping" />
-                 <span className="text-[9px] font-mono uppercase tracking-[0.2em] font-black">CORE_NODE: CONNECTED ({SIDE_QUESTS.length})</span>
+              <div className="flex items-center gap-6 border-t-[3px] border-zinc-950 pt-6">
+                 <div className="w-3 h-3 rounded-full bg-zinc-950 animate-pulse" />
+                 <span className="text-[11px] font-mono uppercase tracking-[0.3em] font-black">CORE_NODE_SYNC: {SIDE_QUESTS.length} SIGNALS FOUND</span>
               </div>
            </div>
         </div>
@@ -173,19 +191,19 @@ export const Act4Section: React.FC = () => {
            </div>
 
            {/* Signal Connection Traces */}
-           <svg className="absolute inset-0 w-full h-full z-0 pointer-events-none opacity-30">
+           <svg className="absolute inset-0 w-full h-full z-0 pointer-events-none opacity-40">
               <motion.path
-                d="M 20 20 L 48 52 M 48 52 L 75 15 M 75 15 L 85 82 M 85 82 L 48 52 M 48 52 L 18 78"
+                d="M 20 20 L 48 52 M 48 52 L 75 15 M 75 15 L 85 82 M 85 82 L 48 52 M 48 52 L 18 78 M 48 52 L 55 35"
                 fill="none"
                 stroke="#000"
-                strokeWidth="0.75"
-                strokeDasharray="8,8"
+                strokeWidth="1"
+                strokeDasharray="12,12"
                 style={{ pathLength }}
               />
            </svg>
 
            {/* Interactive Nodes */}
-           <div className={`relative z-10 w-full h-full min-h-[60vh] transition-all duration-1000 ${selectedQuest ? 'scale-[1.05] filter blur-[1px] opacity-40 grayscale pointer-events-none' : ''}`}>
+           <div className={`relative z-10 w-full h-full min-h-[60vh] transition-all duration-1000 ${selectedQuest ? 'filter blur-[0.5px]' : ''}`}>
               {SIDE_QUESTS.map((quest) => (
                 <QuestNode 
                   key={quest.id} 
@@ -200,70 +218,54 @@ export const Act4Section: React.FC = () => {
            </div>
 
 
-           {/* Side Quest Detail Deck (Deeper Immersion) */}
+           {/* Side Quest Detail Deck (Integrated Investigation Lane) */}
            <AnimatePresence>
              {selectedQuest && (
                <motion.div
-                 initial={{ opacity: 0, scale: 0.9, y: 100, filter: 'blur(20px)' }}
-                 animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
-                 exit={{ opacity: 0, scale: 1.1, y: 50, filter: 'blur(20px)' }}
-                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                 className="absolute inset-0 m-4 md:m-8 bg-zinc-950/95 backdrop-blur-3xl z-[100] rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-2xl"
+                 initial={{ opacity: 0, x: -100 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 exit={{ opacity: 0, x: -50 }}
+                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                 className="absolute inset-y-0 left-0 w-full md:w-[600px] bg-white/95 backdrop-blur-3xl z-[100] border-r border-zinc-100 p-12 md:p-24 flex flex-col justify-center space-y-20 shadow-[40px_0_100px_rgba(0,0,0,0.03)]"
                >
-                 {/* Immersion Background Elements */}
-                 <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <div className="absolute inset-0 overflow-hidden">
-                       <motion.div 
-                         animate={{ x: [0, 100, 0], y: [0, -50, 0] }}
-                         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                         className="w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,_#fff_1px,_transparent_1px)] bg-[length:40px_40px]" 
-                       />
+                 <button 
+                   onClick={() => setSelectedQuest(null)}
+                   className="absolute top-12 left-12 md:left-24 text-[11px] font-mono text-zinc-400 hover:text-zinc-950 uppercase tracking-[0.6em] transition-all flex items-center gap-8 group"
+                 >
+                   <div className="w-12 h-px bg-zinc-200 group-hover:w-16 group-hover:bg-zinc-950 transition-all" />
+                   Close_Archive
+                 </button>
+
+                 <div className="space-y-12">
+                    <div className="flex items-center gap-8">
+                       <span className="text-[14px] font-mono text-zinc-300 font-black">{selectedQuest.id}</span>
+                       <div className="w-2 h-2 rounded-full bg-zinc-950/20" />
+                       <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-[0.4em]">{selectedQuest.status}</span>
+                    </div>
+                    
+                    <div className="space-y-6">
+                       <h3 className="text-[clamp(3.5rem,6vw,6rem)] font-black tracking-[-0.08em] text-zinc-950 leading-[0.8] uppercase italic">
+                          {selectedQuest.title}
+                       </h3>
+                       <div className="max-w-md">
+                          <p className="text-3xl font-light text-zinc-950 leading-tight italic">
+                             "{selectedQuest.observation}"
+                          </p>
+                       </div>
                     </div>
                  </div>
 
-                 <div className="relative w-full md:w-3/5 p-12 md:p-24 flex flex-col justify-end space-y-12">
-                     <button 
-                       onClick={() => setSelectedQuest(null)}
-                       className="absolute top-12 left-12 md:left-24 text-[10px] font-mono text-zinc-500 hover:text-white uppercase tracking-[0.6em] transition-all flex items-center gap-6"
-                     >
-                       <div className="w-8 h-px bg-zinc-700" />
-                       Return_to_Map
-                     </button>
-
-                     <div className="space-y-8">
-                        <div className="flex items-center gap-6">
-                           <span className="text-[12px] font-mono text-zinc-500 font-black">{selectedQuest.id}</span>
-                           <div className="w-2 h-2 rounded-full bg-zinc-700" />
-                           <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">{selectedQuest.status}</span>
-                        </div>
-                        <h3 className="text-[clamp(3.5rem,8vw,10rem)] font-black tracking-[-0.08em] text-white leading-[0.8] uppercase italic">
-                           {selectedQuest.title}
-                        </h3>
-                     </div>
-
-                     <div className="max-w-xl">
-                        <p className="text-2xl font-light text-zinc-400 leading-tight italic">
-                           "{selectedQuest.observation}"
-                        </p>
-                     </div>
-                 </div>
-
-                 <div className="relative w-full md:w-2/5 bg-zinc-900/50 border-l border-white/5 p-12 md:p-24 flex flex-col justify-center space-y-16">
+                 <div className="space-y-16 border-t border-zinc-50 pt-16">
                      <div className="space-y-12">
-                        <DetailRow dark label="Experiment" content={selectedQuest.experiment} />
-                        <DetailRow dark label="Discovery" content={selectedQuest.discovery} />
+                        <DetailRow label="Investigation" content={selectedQuest.experiment} />
+                        <DetailRow label="Discovery" content={selectedQuest.discovery} />
                      </div>
 
-                     <div className="pt-12 border-t border-white/5">
+                     <div className="pt-8">
                         <a href="#" className="flex items-center justify-between group/enter">
                            <div className="space-y-2">
-                              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Investigation_Path</span>
-                              <span className="text-xl text-white font-medium group-hover/enter:tracking-widest transition-all duration-700">Explore_Side_Quest</span>
-                           </div>
-                           <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center group-hover/enter:bg-white group-hover/enter:border-white transition-all duration-700">
-                              <svg className="w-6 h-6 text-white group-hover/enter:text-zinc-950 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                              </svg>
+                              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Access_Full_Trace</span>
+                              <span className="text-2xl text-zinc-950 font-black group-hover/enter:tracking-widest transition-all duration-700 italic uppercase">Open_Investigation →</span>
                            </div>
                         </a>
                      </div>
@@ -313,19 +315,25 @@ const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick,
   
   // Signal Gravity & Repulsion Logic
   const distToMouse = Math.sqrt(Math.pow(quest.x - mousePos.x, 2) + Math.pow(quest.y - mousePos.y, 2));
-  const repulsionRange = 15;
-  const repulsionStrength = distToMouse < repulsionRange ? (1 - distToMouse / repulsionRange) * 20 : 0;
+  const repulsionRange = 25; // WIDER range for hover anticipation
+  const repulsionStrength = distToMouse < repulsionRange ? (1 - distToMouse / repulsionRange) * 25 : 0;
   
+  // Predictable vs Unpredictable Drift
+  const driftRef = useRef({ x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 });
+  const time = Date.now() * 0.001;
+  const signalDriftX = Math.sin(time + parseInt(quest.id.split('-')[1])) * 2;
+  const signalDriftY = Math.cos(time * 0.7 + parseInt(quest.id.split('-')[1])) * 2;
+
   // Calculate repulsion vector
   const dx = quest.x - mousePos.x;
   const dy = quest.y - mousePos.y;
   const angle = Math.atan2(dy, dx);
-  const offsetX = Math.cos(angle) * repulsionStrength;
-  const offsetY = Math.sin(angle) * repulsionStrength;
+  const offsetX = (Math.cos(angle) * repulsionStrength) + signalDriftX;
+  const offsetY = (Math.sin(angle) * repulsionStrength) + signalDriftY;
 
   // Signal specific behaviors
-  const flicker = quest.status === 'IN_PROGRESS';
-  const intensityScale = 0.8 + (quest.intensity * 0.15);
+  const flicker = quest.status === 'IN_PROGRESS' || quest.isIrrational;
+  const intensityScale = 0.9 + (quest.intensity * 0.2);
 
   return (
     <motion.div
@@ -335,59 +343,70 @@ const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick,
       animate={{ 
         x: offsetX, 
         y: offsetY,
-        scale: isSelected ? 1.5 : (distToMouse < 10 ? 1.1 : 1),
+        scale: isSelected ? 1.4 : 1,
+        opacity: selectedQuest ? (isSelected ? 1 : 0.05) : 1,
       }}
       transition={{ 
         type: "spring", 
-        stiffness: 100, 
-        damping: 15,
-        delay: 0.1 * parseInt(quest.id.split('-')[1])
+        stiffness: 80, 
+        damping: 20,
+        delay: isSelected ? 0 : 0.1 * parseInt(quest.id.split('-')[1])
       }}
-      style={{ left: `${quest.x}%`, top: `${quest.y}%` }}
-      className="absolute group z-10"
+      style={{ left: `${quest.x}%`, top: `${quest.y}%`, zIndex: isSelected ? 50 : 10 }}
+      className="absolute group"
       onClick={onClick}
     >
-      <div className="relative flex items-center justify-center cursor-pointer">
+      <div 
+        className={`relative flex items-center justify-center ${quest.isIrrational ? 'cursor-not-allowed cursor-wait' : 'cursor-pointer'}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (quest.isIrrational) return;
+          onClick();
+        }}
+      >
          {/* Signal Pulse (Intensity Driven) */}
          <motion.div 
             animate={{ 
-               scale: [1, 1.5 + (quest.intensity * 0.1), 1],
-               opacity: [0.2, 0.05, 0.2]
+               scale: [1, 2 + (quest.intensity * 0.2), 1],
+               opacity: [0.15, 0.02, 0.15],
             }}
-            transition={{ duration: 5 / quest.intensity, repeat: Infinity, ease: "easeInOut" }}
-            className={`absolute w-12 h-12 rounded-full border border-zinc-200 ${isNew ? 'border-zinc-950/20' : ''}`}
+            transition={{ duration: 6 / quest.intensity, repeat: Infinity, ease: "linear" }}
+            className={`absolute w-16 h-16 rounded-full border ${isNew ? 'border-zinc-950/20' : 'border-zinc-100'} ${quest.isIrrational ? 'border-dashed border-red-100' : ''}`}
          />
-
-         {/* Energy Field */}
-         <div className="absolute w-24 h-24 rounded-full bg-transparent group-hover:bg-zinc-50/30 transition-all duration-1000 -translate-x-1/2 -translate-y-1/2 left-0 top-0" />
 
          {/* Core Node */}
          <div className="relative flex items-center justify-center">
             <motion.div 
-               animate={flicker ? { opacity: [1, 0.4, 1] } : {}}
-               transition={{ duration: 0.2, repeat: Infinity }}
-               className={`w-4 h-4 rounded-full border-2 transition-all duration-700 shadow-sm ${
+               animate={flicker ? { 
+                 opacity: [1, 0.4, 1],
+                 scale: [1, 1.1, 1],
+               } : {}}
+               transition={{ duration: 0.8, repeat: Infinity }}
+               className={`w-6 h-6 rounded-full border-[3px] transition-all duration-1000 shadow-lg ${
                  isSelected 
-                   ? 'bg-zinc-950 border-zinc-950 scale-125' 
+                   ? 'bg-zinc-950 border-zinc-950' 
                    : isVisited 
-                     ? 'bg-zinc-100 border-zinc-100 w-2.5 h-2.5' 
-                     : 'bg-white border-zinc-900'
+                     ? 'bg-white border-zinc-100' 
+                     : isNew 
+                       ? 'bg-zinc-950 border-zinc-950'
+                       : 'bg-white border-zinc-950'
                }`}
                style={{ scale: intensityScale }}
             />
             
-            {/* Metadata (Bolder Scale Contrast) */}
-            <div className={`absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 transition-all duration-700 pointer-events-none
-              ${isNew || isSelected ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0'}`}
+            {/* Metadata (Refined Hierarchy) */}
+            <div className={`absolute -top-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 transition-all duration-1000 pointer-events-none
+              ${isSelected || (distToMouse < 8 && !selectedQuest) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
             >
-               <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-mono text-zinc-400 uppercase tracking-[0.4em] font-black">{quest.type}</span>
-                  {isNew && <div className="w-1.5 h-1.5 rounded-full bg-zinc-950" />}
+               <div className="flex items-center gap-3">
+                  <span className="text-[9px] font-mono text-zinc-300 uppercase tracking-[0.4em] font-black">{quest.type}</span>
+                  {quest.isIrrational && <span className="text-[8px] font-mono text-red-500/50 uppercase tracking-widest">[ERR]</span>}
                </div>
-               <span className="text-[14px] font-black tracking-[-0.04em] uppercase text-zinc-950 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-sm border border-zinc-100 shadow-xl whitespace-nowrap">
-                  {quest.title}
+               <span className={`text-[18px] font-black tracking-[-0.04em] uppercase transition-all duration-700 px-6 py-2 rounded-sm border shadow-2xl whitespace-nowrap
+                 ${isSelected ? 'text-white bg-zinc-950 border-zinc-950' : 'text-zinc-950 bg-white border-zinc-100'}`}
+               >
+                 {quest.title}
                </span>
-               <span className="text-[7px] font-mono text-zinc-300 uppercase tracking-widest">{quest.category} // INT:{quest.intensity}</span>
             </div>
          </div>
       </div>
@@ -395,10 +414,10 @@ const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick,
   );
 };
 
-const DetailRow: React.FC<{ label: string, content: React.ReactNode, dark?: boolean }> = ({ label, content, dark }) => (
-  <div className={`space-y-4 border-l ${dark ? 'border-white/10 hover:border-white/30' : 'border-zinc-100 hover:border-zinc-300'} pl-12 transition-all group`}>
-     <span className={`text-[10px] font-mono uppercase tracking-[0.6em] ${dark ? 'text-zinc-600' : 'text-zinc-300'} block font-black`}>{label}</span>
-     <p className={`text-xl md:text-2xl font-light ${dark ? 'text-zinc-300' : 'text-zinc-600'} leading-relaxed md:leading-snug transition-transform duration-700 group-hover:translate-x-2`}>
+const DetailRow: React.FC<{ label: string, content: React.ReactNode }> = ({ label, content }) => (
+  <div className={`space-y-4 border-l border-zinc-100 pl-12 transition-all group hover:border-zinc-950`}>
+     <span className={`text-[10px] font-mono uppercase tracking-[0.6em] text-zinc-300 block font-black`}>{label}</span>
+     <p className={`text-2xl font-light text-zinc-950 leading-snug transition-transform duration-700 group-hover:translate-x-2 italic`}>
         {content}
      </p>
   </div>
