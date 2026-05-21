@@ -1,6 +1,6 @@
 {
   "name": "Carol Portfolio",
-  "description": "Secure, editorial portfolio for Carol - Senior PM transitioning to Cybersecurity.",
+  "description": "An interactive digital essay and cinematic narrative about trust, systems, and digital behavior.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
