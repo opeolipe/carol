@@ -113,19 +113,29 @@ export const Act4Section: React.FC = () => {
   const [selectedQuest, setSelectedQuest] = useState<SideQuest | null>(null);
   const [visitedQuests, setVisitedQuests] = useState<Set<string>>(new Set());
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isDormant, setIsDormant] = useState(false); // Global Stillness State
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   
-  // Use scroll for ambient parallax
+  // Stillness Ecology Cycle
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      setIsDormant(true);
+      setTimeout(() => setIsDormant(false), 12000); // 12s of narrative silence
+    }, 40000); // Every 40s - less frequent pauses
+    return () => clearInterval(cycle);
+  }, []);
+
+  // Use scroll for ambient parallax with refined curves
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
   });
 
-  const ambientY = useTransform(scrollYProgress, [0, 1], [0, selectedQuest ? 10 : 40]);
+  const ambientY = useTransform(scrollYProgress, [0, 1], [0, selectedQuest ? 5 : 30]);
 
   const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!mapRef.current || selectedQuest) return;
+    if (!mapRef.current || selectedQuest || isDormant) return;
     const rect = mapRef.current.getBoundingClientRect();
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
@@ -176,7 +186,7 @@ export const Act4Section: React.FC = () => {
                 <span className="inline-block whitespace-nowrap">investigations in progress.</span>
               </p>
               <div className="flex items-center gap-4 border-t-[1px] border-zinc-50 pt-4">
-                 <div className="w-1 h-1 rounded-full bg-zinc-950 animate-pulse" />
+                 <div className={`w-1 h-1 rounded-full bg-zinc-950 transition-opacity duration-1000 ${isDormant ? 'opacity-20' : 'animate-pulse'}`} />
                  <span className="text-[8px] md:text-[9px] font-mono uppercase tracking-[0.2em] font-black text-zinc-300">CORE_SYNC: {SIDE_QUESTS.length} SIGNALS</span>
               </div>
            </div>
@@ -194,19 +204,19 @@ export const Act4Section: React.FC = () => {
            {/* Investigative Grid Lines (Orchestrated) */}
            <motion.div 
               animate={{ 
-                opacity: selectedQuest ? 0.01 : 0.04,
-                scale: selectedQuest ? 1.1 : 1
+                opacity: selectedQuest ? 0.01 : (isDormant ? 0.015 : 0.03),
+                scale: selectedQuest ? 1.05 : 1
               }}
-              className="absolute inset-0 z-0 pointer-events-none transition-all duration-1000"
+              className="absolute inset-0 z-0 pointer-events-none transition-all duration-[3000ms]"
            >
               <div className="w-full h-full" style={{ 
-                backgroundImage: 'linear-gradient(to right, #000 1.5px, transparent 1.5px), linear-gradient(to bottom, #000 1.5px, transparent 1.5px)',
+                backgroundImage: 'linear-gradient(to right, #000 1.2px, transparent 1.2px), linear-gradient(to bottom, #000 1.2px, transparent 1.2px)',
                 backgroundSize: '4% 4%'
               }} />
            </motion.div>
 
-           {/* Signal Connection Traces (Adaptive) */}
-           <svg className={`absolute inset-0 w-full h-full z-0 pointer-events-none transition-all duration-1000 ${selectedQuest ? 'opacity-0 blur-sm scale-110' : 'opacity-[0.25]'}`}>
+           {/* Signal Connection Traces (Adaptive Alignment) */}
+           <svg className={`absolute inset-0 w-full h-full z-0 pointer-events-none transition-all duration-[2000ms] ${selectedQuest ? 'opacity-0 blur-lg scale-110' : (isDormant ? 'opacity-[0.1]' : 'opacity-[0.2]')}`}>
               <motion.path
                 d="M 20 20 L 48 52 M 48 52 L 75 15 M 75 15 L 85 82 M 85 82 L 48 52 M 48 52 L 18 78 M 48 52 L 55 35"
                 fill="none"
@@ -231,9 +241,11 @@ export const Act4Section: React.FC = () => {
                   onClick={() => handleQuestSelect(quest)}
                   mousePos={mousePos}
                   selectedQuest={selectedQuest}
+                  isArchiveDormant={isDormant}
                 />
               ))}
            </motion.div>
+
 
 
            {/* Side Quest Detail Deck (Focused Editorial State) */}
@@ -333,7 +345,6 @@ export const Act4Section: React.FC = () => {
     </section>
   );
 };
-
 interface NodeProps {
   quest: SideQuest;
   isSelected: boolean;
@@ -341,9 +352,10 @@ interface NodeProps {
   onClick: () => void;
   mousePos: { x: number, y: number };
   selectedQuest: SideQuest | null;
+  isArchiveDormant?: boolean;
 }
 
-const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick, mousePos, selectedQuest }) => {
+const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick, mousePos, selectedQuest, isArchiveDormant }) => {
   const isNew = quest.isNew;
   
   // Status-Based Ecology
@@ -352,21 +364,21 @@ const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick,
   const isInProgress = quest.status === 'IN_PROGRESS' || quest.isIrrational;
   const isRecent = quest.status === 'RECENT';
 
-  // Signal Gravity & Repulsion Logic (Refined Physics)
+  // Signal Gravity & Repulsion Logic (Highly Restrained Physics)
   const distToMouse = Math.sqrt(Math.pow(quest.x - mousePos.x, 2) + Math.pow(quest.y - mousePos.y, 2));
   
-  // Dynamic Range based on status
-  const baseRange = isRecent ? 14 : 10;
-  const repulsionRange = isVisited ? baseRange * 0.6 : baseRange; 
-  const repulsionStrength = distToMouse < repulsionRange && !selectedQuest 
-    ? (1 - distToMouse / repulsionRange) * (isRecent ? 8 : 5) 
+  // Dynamic Range based on status - less aggressive
+  const baseRange = isRecent ? 12 : 9;
+  const repulsionRange = isVisited ? baseRange * 0.4 : baseRange; 
+  const repulsionStrength = distToMouse < repulsionRange && !selectedQuest && !isArchiveDormant
+    ? (1 - distToMouse / repulsionRange) * (isRecent ? 6 : 3) 
     : 0;
-   
+    
    const time = Date.now() * 0.001;
-   // Drifting depends on exploration state
-   const driftScale = isVisited ? 0.3 : (isArchived ? 0.5 : 1);
-   const signalDriftX = !selectedQuest ? Math.sin(time * 0.15 + parseInt(quest.id.split('-')[1])) * (1.2 * driftScale) : 0;
-   const signalDriftY = !selectedQuest ? Math.cos(time * 0.12 + parseInt(quest.id.split('-')[1])) * (1.2 * driftScale) : 0;
+   // Drifting depends on exploration state and global stillness - deepening archive effect
+   const driftScale = isArchiveDormant ? 0.02 : (isVisited ? 0.1 : (isArchived ? 0.3 : 0.8));
+   const signalDriftX = !selectedQuest ? Math.sin(time * 0.08 + parseInt(quest.id.split('-')[1])) * (1.2 * driftScale) : 0;
+   const signalDriftY = !selectedQuest ? Math.cos(time * 0.07 + parseInt(quest.id.split('-')[1])) * (1.2 * driftScale) : 0;
 
   const dx = quest.x - mousePos.x;
   const dy = quest.y - mousePos.y;
@@ -375,26 +387,26 @@ const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick,
   const offsetY = (Math.sin(angle) * repulsionStrength) + signalDriftY;
 
   // Visual Behavior
-  const flicker = isInProgress && !selectedQuest;
-  const intensityScale = (0.9 + (quest.intensity * 0.12)) * (isVisited ? 0.9 : 1);
+  const flicker = isInProgress && !selectedQuest && !isArchiveDormant && !isVisited;
+  const intensityScale = (0.92 + (quest.intensity * 0.1)) * (isVisited ? 0.8 : 1);
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0 }}
-      whileInView={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
+      whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
       viewport={{ once: true }}
       animate={{ 
         x: offsetX, 
         y: offsetY,
-        scale: isSelected ? 1.05 : (selectedQuest ? 0.8 : 1),
-        opacity: selectedQuest ? (isSelected ? 1 : 0.02) : (isVisited ? 0.6 : 1), 
-        filter: selectedQuest && !isSelected ? 'blur(15px)' : 'blur(0px)'
+        scale: isSelected ? 1.05 : (selectedQuest ? 0.85 : 1),
+        opacity: selectedQuest ? (isSelected ? 1 : 0.015) : (isVisited ? 0.4 : 1), 
+        filter: selectedQuest && !isSelected ? 'blur(20px)' : 'blur(0px)'
       }}
       transition={{ 
         type: "spring", 
-        stiffness: isSelected ? 40 : 20, 
-        damping: isSelected ? 20 : 35,
-        delay: isSelected ? 0 : 0.02 * parseInt(quest.id.split('-')[1])
+        stiffness: isSelected ? 30 : 12, 
+        damping: isSelected ? 20 : 45,
+        delay: isSelected ? 0 : 0.03 * parseInt(quest.id.split('-')[1])
       }}
       style={{ left: `${quest.x}%`, top: `${quest.y}%`, zIndex: isSelected ? 100 : 10 }}
       className="absolute group"
@@ -406,19 +418,16 @@ const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick,
           if (quest.isIrrational) return;
           onClick();
         }}
-        onMouseEnter={() => {
-          // Subtle touch/hover hint
-        }}
       >
          {/* Signal Pulse (Ecology Controlled) */}
          {!isVisited && !isArchived && (
             <motion.div 
                animate={{ 
-                  scale: [1, 2.2 + (quest.intensity * 0.1), 1],
-                  opacity: [0.08, 0, 0.08],
+                  scale: isArchiveDormant ? [1, 1.1, 1] : [1, 2.2 + (quest.intensity * 0.1), 1],
+                  opacity: isArchiveDormant ? 0.04 : [0.08, 0, 0.08],
                }}
                transition={{ 
-                 duration: (10 / quest.intensity) * (isActive ? 0.8 : 1.2), 
+                 duration: (12 / quest.intensity) * (isActive ? 0.8 : 1.2), // Slower pulsing
                  repeat: Infinity, 
                  ease: "linear" 
                }}
@@ -433,7 +442,7 @@ const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick,
                  opacity: [1, 0.3, 1],
                  scale: [1, 1.05, 1],
                } : {}}
-               transition={{ duration: 1.8, repeat: Infinity }}
+               transition={{ duration: 2.2, repeat: Infinity }}
                className={`w-3.5 h-3.5 md:w-4.5 md:h-4.5 rounded-full border-[1.5px] transition-all duration-1000 ${
                  isSelected 
                    ? 'bg-zinc-950 border-zinc-950 shadow-[0_0_30px_rgba(0,0,0,0.2)]' 
@@ -446,20 +455,22 @@ const QuestNode: React.FC<NodeProps> = ({ quest, isSelected, isVisited, onClick,
                style={{ scale: intensityScale }}
             />
             
-            {/* Metadata (Interaction Awareness) */}
-            <div className={`absolute -top-14 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 transition-all duration-1000 pointer-events-none
-              ${isSelected || (distToMouse < 7 && !selectedQuest) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+         {/* Metadata (Interaction Awareness) */}
+            <div className={`absolute -top-14 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 transition-all duration-[1500ms] pointer-events-none
+              ${isSelected || (distToMouse < 6 && !selectedQuest && !isArchiveDormant) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
             >
-               <span className="text-[7px] font-mono text-zinc-300 uppercase tracking-[0.4em] font-bold">{quest.type}</span>
-               <span className={`text-[12px] md:text-[13px] font-black tracking-tight transition-all duration-1000 px-4 py-1 rounded-sm border shadow-2xl whitespace-nowrap capitalize
+               <span className="text-[7px] font-mono text-zinc-300 uppercase tracking-[0.5em] font-bold">{quest.type}</span>
+               <span className={`text-[12px] md:text-[13px] font-black tracking-tighter transition-all duration-[1200ms] px-4 py-1.5 rounded-sm border shadow-2xl whitespace-nowrap capitalize
                  ${isSelected ? 'text-white bg-zinc-950 border-zinc-950 scale-110' : 'text-zinc-950 bg-white border-zinc-50'}`}
                >
                  {quest.title}
                </span>
-               <div className="flex items-center gap-2 mt-1">
-                 <div className={`w-1 h-1 rounded-full ${isSelected ? 'bg-zinc-950' : 'bg-zinc-200'}`} />
-                 <span className="text-[6px] font-mono text-zinc-300 uppercase tracking-widest">{quest.status}</span>
-               </div>
+               {!isVisited && (
+                 <div className="flex items-center gap-2 mt-1">
+                   <div className={`w-1 h-1 rounded-full ${isSelected ? 'bg-zinc-950' : 'bg-zinc-300'}`} />
+                   <span className="text-[6px] font-mono text-zinc-300 uppercase tracking-widest">{quest.status}</span>
+                 </div>
+               )}
             </div>
          </div>
       </div>

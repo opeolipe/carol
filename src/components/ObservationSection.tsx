@@ -15,7 +15,7 @@ interface SignalTraceProps {
 
 const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observation, metadata, annotations, index, onViewed, isViewed }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { amount: 0.5 });
+  const isInView = useInView(ref, { amount: 0.7 }); // Higher threshold for deliberate focus
   
   useEffect(() => {
     if (isInView) {
@@ -28,35 +28,39 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
     offset: ["start end", "center center", "end start"]
   });
 
-  // Attention Gravity: Sharper focus in the center
-  const opacity = useTransform(scrollYProgress, [0, 0.45, 0.55, 1], [0, 1, 1, 0]);
-  const blur = useTransform(scrollYProgress, [0, 0.4, 0.5, 0.6, 1], [15, 0, 0, 0, 20]); 
-  const y = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [40, 0, 0, -40]); 
-  const scale = useTransform(scrollYProgress, [0.4, 0.5, 0.6], [0.98, 1, 0.98]);
+  // Attention Gravity: Sharper focus in the center, slower reaction
+  const opacity = useTransform(scrollYProgress, [0, 0.48, 0.52, 1], [0, 1, 1, 0]);
+  const blur = useTransform(scrollYProgress, [0, 0.42, 0.5, 0.58, 1], [20, 2, 0, 2, 25]); 
+  const y = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [50, 0, 0, -50]); 
+  const scale = useTransform(scrollYProgress, [0.42, 0.5, 0.58], [0.97, 1, 0.97]);
 
   // Exploration Memory: Soften if already viewed
-  const archiveDim = isViewed && !isInView ? 0.3 : 1;
+  const archiveDim = isViewed && !isInView ? 0.2 : 1;
+  const archiveBlur = isViewed ? 2 : 0;
+  const archiveSaturation = isViewed ? 'grayscale(0.4)' : 'none';
 
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: index % 2 === 0 ? 0.2 : 0.4, // Asymmetrical sequencing
-        delayChildren: 0.3
+        // Asymmetrical, non-linear sequencing based on archive depth
+        staggerChildren: index === 1 ? 0.35 : (index === 2 ? 0.25 : 0.45), 
+        delayChildren: 0.5,
+        ease: [0.22, 1, 0.36, 1]
       }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 24, filter: 'blur(4px)' },
+    hidden: { opacity: 0, y: 35, filter: 'blur(10px)' },
     show: { 
       opacity: 1, 
       y: 0, 
       filter: 'blur(0px)',
       transition: { 
-        duration: 2, 
-        ease: [0.16, 1, 0.3, 1] 
+        duration: 2.4, 
+        ease: [0.22, 1, 0.36, 1] 
       } 
     }
   };
@@ -66,12 +70,12 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
       ref={ref}
       style={{ 
         opacity, 
-        filter: useTransform(blur, (v) => `blur(${v}px)`), 
+        filter: useTransform(blur, (v) => `blur(${v + archiveBlur}px) ${archiveSaturation}`), 
         y, 
         scale,
-        transition: { duration: 1.5, ease: "easeOut" }
+        transition: { duration: 2, ease: [0.22, 1, 0.36, 1] }
       }}
-      className="min-h-screen flex flex-col items-center justify-center py-32 md:py-48 px-8 md:px-24 mb-[10vh] md:mb-[15vh]"
+      className="min-h-[110vh] flex flex-col items-center justify-center py-32 md:py-64 px-8 md:px-24 mb-[5vh] md:mb-[15vh]"
     >
       <motion.div 
         variants={container}
@@ -103,6 +107,16 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
                  <span className="text-[10px] font-mono tracking-[0.3em] text-zinc-400 font-bold uppercase">{id}</span>
                  <div className="w-8 h-px bg-zinc-100" />
                  <span className="text-[10px] font-mono tracking-[0.3em] text-zinc-300 uppercase">{timestamp}</span>
+                 {isViewed && (
+                   <motion.div 
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 0.4 }}
+                     className="ml-auto md:ml-4 flex items-center gap-2"
+                   >
+                     <div className="w-1 h-1 rounded-full bg-zinc-400" />
+                     <span className="text-[7px] font-mono tracking-widest text-zinc-400 uppercase">Archive_Stabilized</span>
+                   </motion.div>
+                 )}
               </div>
               
               <h2 className="text-[clamp(2.2rem,7vw,7rem)] font-bold tracking-tight text-zinc-950 leading-[0.85] uppercase max-w-5xl">
@@ -117,8 +131,11 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
             </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-32 items-start">
-             <motion.div variants={item} className="space-y-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-32 items-start">
+             <motion.div 
+                variants={item} 
+                className="space-y-10"
+             >
                 <div className="space-y-6">
                    <div className="flex items-center gap-4">
                       <div className="w-4 h-px bg-zinc-200" />
@@ -130,33 +147,33 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
                 </div>
                 
                 <div className="pt-4">
-                   <a href="#" className="interactive group inline-flex items-center gap-6">
+                   <button className="interactive group inline-flex items-center gap-6 cursor-pointer">
                       <span className="text-[9px] uppercase tracking-[0.4em] font-black text-zinc-300 group-hover:text-zinc-950 transition-all duration-700">
                         Investigate Signal
                       </span>
                       <div className="w-12 h-px bg-zinc-100 group-hover:w-24 group-hover:bg-zinc-950 transition-all duration-1000" />
-                   </a>
+                   </button>
                 </div>
              </motion.div>
 
-             <div className="space-y-12 md:space-y-20 md:pt-32">
+             <div className="space-y-16 md:space-y-24 md:pt-48">
                 {annotations?.map((note, i) => (
                   <motion.div 
                     key={i}
                     variants={{
-                      hidden: { opacity: 0, x: -10, filter: 'blur(4px)' },
+                      hidden: { opacity: 0, x: -15, filter: 'blur(6px)' },
                       show: { 
                         opacity: 1, 
                         x: 0,
                         filter: 'blur(0px)',
                         transition: { 
-                          delay: 0.8 + (Math.random() * 0.4 * i), // Non-linear organic sequencing
-                          duration: 2.2, 
-                          ease: [0.16, 1, 0.3, 1] 
+                          delay: 1.2 + (i * 0.5) + (Math.random() * 0.4), // Highly non-linear organic sequencing
+                          duration: 2.8, 
+                          ease: [0.22, 1, 0.36, 1] 
                         } 
                       }
                     }}
-                    className="space-y-4 relative group max-w-sm"
+                    className={`space-y-4 relative group max-w-[320px] md:max-w-sm ${i % 2 === 0 ? 'ml-0' : 'ml-4 md:ml-12'}`}
                   >
                     <div className="flex items-center gap-3">
                        <div className="w-1 h-1 bg-zinc-200 rounded-full group-hover:bg-zinc-950 transition-all duration-1000" />

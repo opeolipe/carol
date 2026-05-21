@@ -21,9 +21,25 @@ export const CinematicHero: React.FC = () => {
   const [step, setStep] = useState(0); 
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Interaction Physics: Smooth Mouse Tracking
-  const mouseX = useSpring(0, { stiffness: 20, damping: 40 });
-  const mouseY = useSpring(0, { stiffness: 20, damping: 40 });
+  // Interaction Physics: Slow, deliberate, and intelligent tracking
+  const mouseXTarget = useRef(0);
+  const mouseYTarget = useRef(0);
+  const mouseX = useSpring(0, { stiffness: 8, damping: 60 });
+  const mouseY = useSpring(0, { stiffness: 8, damping: 60 });
+  
+  // Stillness Cycle Logic: Periodic dormancy in environmental reaction
+  const [isDormant, setIsDormant] = useState(false);
+
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      setIsDormant(true);
+      // Return to center during dormancy
+      mouseX.set(0);
+      mouseY.set(0);
+      setTimeout(() => setIsDormant(false), 9000); // 9s of stillness
+    }, 28000); // every 28s - longer silence
+    return () => clearInterval(cycle);
+  }, [mouseX, mouseY]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -31,89 +47,117 @@ export const CinematicHero: React.FC = () => {
   });
 
   const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.08]); 
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.05]); 
   const blurValue = useTransform(scrollYProgress, [0, 0.6], [0, 8]); 
   const signalClarity = useTransform(scrollYProgress, [0, 0.5], [0.02, 0.15]);
   
-  // Mobile Environmental Drift
-  const mobileDrift = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  // Mobile Environmental Response (Scroll & Gesture)
+  const mobileDriftY = useTransform(scrollYProgress, [0, 1], [0, 60]);
+  const mobileDriftX = useTransform(scrollYProgress, [0, 1], [0, 15]);
 
   useEffect(() => {
     const timers = [
       setTimeout(() => setStep(1), 3000), 
       setTimeout(() => setStep(2), 9500), 
       setTimeout(() => setStep(3), 16000), 
-      setTimeout(() => setStep(4), 22000), // Identity Reveal
-      setTimeout(() => setStep(5), 26000), // Narrative Subtext
-      setTimeout(() => setStep(6), 31000), // Interaction Hint
+      setTimeout(() => setStep(4), 22000), 
+      setTimeout(() => setStep(5), 26000), 
+      setTimeout(() => setStep(6), 31000), 
     ];
 
     const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      if (isDormant) return;
+      // Normalizing with softer range
+      const x = (e.clientX / window.innerWidth - 0.5) * 1.2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 1.2;
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (isDormant || !e.touches[0]) return;
+      const x = (e.touches[0].clientX / window.innerWidth - 0.5) * 0.8;
+      const y = (e.touches[0].clientY / window.innerHeight - 0.5) * 0.8;
       mouseX.set(x);
       mouseY.set(y);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
+    
     return () => {
       timers.forEach(clearTimeout);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isDormant]);
 
-  // Motion Hierarchy & Signal Gravity Values
-  const ambientX = useTransform(mouseX, [-1, 1], [-15, 15]);
-  const ambientY = useTransform(mouseY, [-1, 1], [-15, 15]);
-  const driftX = useTransform(mouseX, [-1, 1], [10, -10]);
-  const driftY = useTransform(mouseY, [-1, 1], [10, -10]);
-  const typographyX = useTransform(mouseX, [-1, 1], [5, -5]);
-  const typographyY = useTransform(mouseY, [-1, 1], [5, -5]);
+  // Motion Hierarchy & Signal Gravity (Restrained Values)
+  // Level 1: Deep Ambient (Reacts least)
+  const ambientX = useTransform(mouseX, [-1, 1], [-8, 8]);
+  const ambientY = useTransform(mouseY, [-1, 1], [-8, 8]);
+  
+  // Level 2: Drifting Fields (Secondary Motion)
+  const driftX = useTransform(mouseX, [-1, 1], [15, -15]);
+  const driftY = useTransform(mouseY, [-1, 1], [15, -15]);
+  
+  // Level 3: Foreground Typography (Direct Focus)
+  const typographyX = useTransform(mouseX, [-1, 1], [4, -4]);
+  const typographyY = useTransform(mouseY, [-1, 1], [4, -4]);
 
   return (
     <div ref={containerRef} className="relative h-[250vh] w-full bg-[#fbfbf9] overflow-hidden">
-      {/* Level 1: Deep Ambient Atmospherics (Steady) */}
+      {/* Level 0: Pure Backdrop (Dormant Background System) */}
+      <div className="fixed inset-0 z-[-1] bg-[#fbfbf9]" />
+
+      {/* Level 1: Deep Ambient Atmospherics (Steady Base) */}
       <motion.div 
         style={{ 
           scale, 
           filter: useTransform(blurValue, (v) => `blur(${v}px)`),
+          x: ambientX,
+          y: ambientY
         }}
         className="fixed inset-0 z-0 pointer-events-none"
       >
-        <motion.div 
-          style={{ x: ambientX, y: ambientY }}
-          className="absolute inset-0 opacity-[0.3] blur-[140px]"
+        <div 
+          className="absolute inset-0 opacity-[0.25] blur-[150px]"
           style={{
-            background: 'radial-gradient(circle at 20% 20%, #f1f5f9 0%, transparent 60%), radial-gradient(circle at 80% 80%, #fefce8 0%, transparent 60%)'
+            background: 'radial-gradient(circle at 15% 15%, #f1f5f9 0%, transparent 65%), radial-gradient(circle at 85% 85%, #fefce8 0%, transparent 65%)'
           }}
         />
         
-        {/* Level 2: Drifting Light Fields (Slow Secondary Motion) */}
+        {/* Level 2: Drifting Light Fields (Mobile-Scroll Optimized) */}
         <motion.div 
-          animate={{ 
-            x: [0, 8, -4, 0], 
-            y: [0, -4, 8, 0],
+          animate={isDormant ? { x: 0, y: 0 } : { 
+            x: [0, 10, -5, 0], 
+            y: [0, -5, 10, 0],
           }}
-          transition={{ duration: 55, repeat: Infinity, ease: "linear" }}
-          style={{ x: driftX, y: driftY }}
-          className="absolute inset-0 opacity-[0.2] blur-[160px]"
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          style={{ 
+            x: driftX, 
+            y: useTransform([driftY, mobileDriftY], ([dy, mdy]) => (dy as number) + (mdy as number) * 0.5) 
+          }}
+          className="absolute inset-0 opacity-[0.15] blur-[180px]"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 50%)'
+            background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 60%)'
           }}
         />
 
-        {/* Level 3: Midground Signal Fragments (Static Environment) */}
+        {/* Level 3: Midground Signal Fragments (Physical Noise) */}
         <motion.div 
           style={{ 
             opacity: signalClarity,
-            y: mobileDrift 
+            y: mobileDriftY,
+            x: mobileDriftX,
+            rotate: useTransform(scrollYProgress, [0, 1], [12, 18]) 
           }}
           className="absolute inset-0 flex items-center justify-center overflow-hidden"
         >
-          <div className="w-full h-full noise-texture mix-blend-overlay scale-[1.7] rotate-6" />
+          <div className="w-full h-full noise-texture mix-blend-overlay scale-[1.8] opacity-30" />
         </motion.div>
         
-        <div className="absolute inset-0 noise-texture opacity-[0.04]" />
+        <div className="absolute inset-0 noise-texture opacity-[0.02]" />
       </motion.div>
 
       {/* Narrative Sequence Foreground */}

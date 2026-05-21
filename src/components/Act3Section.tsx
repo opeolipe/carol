@@ -8,18 +8,18 @@ export const Act3Section: React.FC = () => {
     offset: ["start start", "end end"]
   });
 
-  // Global temporal breathing room - slow transitions with subtle "stutters"
-  const opacity = useTransform(scrollYProgress, [0, 0.05, 0.45, 0.5, 0.55, 0.9, 1], [0, 1, 1, 0.8, 1, 1, 0]);
-  const blur = useTransform(scrollYProgress, [0, 0.05, 0.48, 0.52, 0.9, 1], [10, 0, 2, 0, 0, 10]);
+  // Global temporal breathing room - slow transitions with deeper silence and "hesitant" recovery
+  const opacity = useTransform(scrollYProgress, [0, 0.08, 0.42, 0.47, 0.5, 0.53, 0.58, 0.92, 1], [0, 1, 1, 0.82, 0.92, 0.85, 1, 1, 0]);
+  const blur = useTransform(scrollYProgress, [0, 0.05, 0.46, 0.49, 0.51, 0.54, 0.9, 1], [15, 0, 3, 5, 2, 0, 0, 15]);
 
-  // Scene triggers - slightly offset for asymmetrical rhythm
-  const thresholdOpacity = useTransform(scrollYProgress, [0, 0.08, 0.22, 0.32], [0, 1, 1, 0]);
-  const pivotOpacity = useTransform(scrollYProgress, [0.38, 0.48, 0.58, 0.68], [0, 1, 1, 0]);
+  // Scene triggers - emphasizing longer stillness intervals and psychological shifts
+  const thresholdOpacity = useTransform(scrollYProgress, [0, 0.1, 0.25, 0.35], [0, 1, 1, 0]);
+  const pivotOpacity = useTransform(scrollYProgress, [0.4, 0.48, 0.58, 0.7], [0, 1, 1, 0]);
   
   return (
     <section 
       ref={sectionRef} 
-      className="relative min-h-[320vh] bg-[#fdfdfc] z-30"
+      className="relative min-h-[350vh] bg-[#fdfdfc] z-30" // Increased height for slower pacing
     >
       {/* Soft Cinematic Atmosphere - Interrupted */}
       <motion.div 
@@ -78,14 +78,14 @@ export const Act3Section: React.FC = () => {
               </span>
             </h3>
 
-            {/* Visual Rupture: Displacement moment - even quieter instability */}
+            {/* Visual Rupture: Displacement moment - almost subconscious instability */}
             <motion.div 
                style={{ 
-                 opacity: useTransform(scrollYProgress, [0.5, 0.55, 0.61, 0.62, 0.65], [0, 0.05, 0.05, 0.02, 0]),
-                 x: useTransform(scrollYProgress, [0.5, 0.53, 0.57, 0.6, 0.63], [0, 4, -4, 2, 0]),
-                 skewX: useTransform(scrollYProgress, [0.5, 0.55, 0.65], [0, 2, 0])
+                 opacity: useTransform(scrollYProgress, [0.5, 0.53, 0.58, 0.6, 0.65], [0, 0.03, 0.04, 0.015, 0]),
+                 x: useTransform(scrollYProgress, [0.5, 0.52, 0.55, 0.58, 0.63], [0, 2, -1, 1, 0]),
+                 filter: useTransform(scrollYProgress, [0.5, 0.55, 0.6], ["blur(0px)", "blur(2px)", "blur(0px)"])
                }}
-               className="pointer-events-none select-none text-[5vw] font-black text-zinc-950/[0.015] uppercase tracking-tighter"
+               className="pointer-events-none select-none text-[5vw] font-black text-zinc-950/[0.012] uppercase tracking-tighter"
             >
               SIGNAL_DRIFT
             </motion.div>
@@ -119,21 +119,25 @@ export const Act3Section: React.FC = () => {
           </div>
         </div>
 
-        {/* Closing Breath (Transition to Act 4) */}
-         <div className="h-[35vh] flex flex-col items-center justify-center px-8 text-center bg-white relative z-20">
+        {/* Closing Breath (Decisive Recovery transition to Act 4) */}
+         <div className="h-[45vh] flex flex-col items-center justify-center px-8 text-center bg-white relative z-20">
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="space-y-4 md:space-y-6"
+              transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+              className="space-y-6 md:space-y-8"
             >
-               <div className="space-y-3">
-                 <div className="w-px h-8 bg-zinc-950/10 mx-auto" />
-                 <span className="text-[8px] uppercase tracking-[0.5em] text-zinc-400 font-bold block">Restore Signal</span>
+               <div className="space-y-4">
+                 <motion.div 
+                    animate={{ scaleY: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-px h-12 bg-zinc-950/20 mx-auto" 
+                 />
+                 <span className="text-[9px] uppercase tracking-[0.6em] text-zinc-500 font-black block">Restore Signal</span>
                </div>
                
                <div className="max-w-xs mx-auto">
-                  <p className="text-[8px] text-zinc-300 font-light leading-relaxed uppercase tracking-[0.2em]">
+                  <p className="text-[9px] text-zinc-300 font-medium leading-relaxed uppercase tracking-[0.25em]">
                     The investigation persists.
                   </p>
                </div>
@@ -159,25 +163,25 @@ const InternalFragment: React.FC<InternalProps> = ({ id, title, text, annotation
     offset: ["start end", "center center", "end start"]
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.38, 0.58, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [25, 0, 0, -25]);
+  const opacity = useTransform(scrollYProgress, [0, 0.42, 0.58, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.45, 0.55, 1], [30, 0, 0, -30]);
   
-  // Interaction Instability: Non-linear jittery drift
+  // Interaction Instability: Non-linear hesitant drift
   const drift = useTransform(
     scrollYProgress, 
-    [0, 0.2, 0.4, 0.5, 0.6, 0.8, 1], 
+    [0, 0.22, 0.38, 0.5, 0.62, 0.78, 1], 
     [
-      align === 'right' ? 20 : -20, 
-      align === 'right' ? 10 : -10, 
+      align === 'right' ? 12 : -12, 
+      align === 'right' ? 6 : -6, 
+      align === 'right' ? 1 : -1, // Subconscious hesitation point
       0, 
-      align === 'right' ? 2 : -2, // Subtle mid-point shift
-      0, 
-      align === 'right' ? -10 : 10, 
-      align === 'right' ? -20 : 20
+      align === 'right' ? -1 : 1, 
+      align === 'right' ? -6 : 6, 
+      align === 'right' ? -12 : 12
     ]
   );
   
-  const skew = useTransform(scrollYProgress, [0.1, 0.4, 0.6, 0.9], [align === 'right' ? 1.5 : -1.5, 0, 0, align === 'right' ? -1 : 1]);
+  const skew = useTransform(scrollYProgress, [0.15, 0.45, 0.55, 0.85], [align === 'right' ? 0.6 : -0.6, 0, 0, align === 'right' ? -0.5 : 0.5]);
 
   return (
     <motion.div 
@@ -187,7 +191,7 @@ const InternalFragment: React.FC<InternalProps> = ({ id, title, text, annotation
         y, 
         x: drift, 
         skewY: skew,
-        transition: { duration: 1.2, ease: "easeOut" } // Softer response
+        transition: { duration: 1.8, ease: [0.22, 1, 0.36, 1] } // Even softer response
       }}
       className={`relative w-full flex ${align === 'right' ? 'justify-end' : 'justify-start'}`}
     >
