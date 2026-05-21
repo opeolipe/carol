@@ -8,29 +8,34 @@ export const Act3Section: React.FC = () => {
     offset: ["start start", "end end"]
   });
 
-  // Global temporal breathing room - slow transitions
-  const opacity = useTransform(scrollYProgress, [0, 0.05, 0.9, 1], [0, 1, 1, 0]);
-  const blur = useTransform(scrollYProgress, [0, 0.05, 0.9, 1], [10, 0, 0, 10]);
+  // Global temporal breathing room - slow transitions with subtle "stutters"
+  const opacity = useTransform(scrollYProgress, [0, 0.05, 0.45, 0.5, 0.55, 0.9, 1], [0, 1, 1, 0.8, 1, 1, 0]);
+  const blur = useTransform(scrollYProgress, [0, 0.05, 0.48, 0.52, 0.9, 1], [10, 0, 2, 0, 0, 10]);
 
-  // Scene triggers
-  const thresholdOpacity = useTransform(scrollYProgress, [0, 0.1, 0.2, 0.3], [0, 1, 1, 0]);
-  const pivotOpacity = useTransform(scrollYProgress, [0.35, 0.45, 0.55, 0.65], [0, 1, 1, 0]);
+  // Scene triggers - slightly offset for asymmetrical rhythm
+  const thresholdOpacity = useTransform(scrollYProgress, [0, 0.08, 0.22, 0.32], [0, 1, 1, 0]);
+  const pivotOpacity = useTransform(scrollYProgress, [0.38, 0.48, 0.58, 0.68], [0, 1, 1, 0]);
   
   return (
     <section 
       ref={sectionRef} 
-      className="relative min-h-[300vh] bg-[#fdfdfc] z-30"
+      className="relative min-h-[320vh] bg-[#fdfdfc] z-30"
     >
-      {/* Soft Cinematic Atmosphere */}
+      {/* Soft Cinematic Atmosphere - Interrupted */}
       <motion.div 
         style={{ opacity, filter: useTransform(blur, (v) => `blur(${v}px)`) }}
         className="fixed inset-0 pointer-events-none z-0"
       >
         <div className="absolute inset-0 bg-[#fdfdfc]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180vw] h-[180vh] opacity-[0.02] grayscale"
-             style={{ 
-               background: 'radial-gradient(circle at 50% 50%, #71717a 0%, transparent 70%)' 
-             }} 
+        <motion.div 
+          style={{ 
+            scale: useTransform(scrollYProgress, [0, 1], [1, 1.1]),
+            opacity: useTransform(scrollYProgress, [0.4, 0.5, 0.6], [0.02, 0.04, 0.02])
+          }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180vw] h-[180vh] grayscale"
+          style={{ 
+            background: 'radial-gradient(circle at 50% 50%, #71717a 0%, transparent 70%)' 
+          }} 
         />
       </motion.div>
 
@@ -41,32 +46,34 @@ export const Act3Section: React.FC = () => {
           <motion.div 
             style={{ 
               opacity: thresholdOpacity,
-              y: useTransform(scrollYProgress, [0, 0.2], [15, 0])
+              y: useTransform(scrollYProgress, [0, 0.2], [10, 0]),
+              x: useTransform(scrollYProgress, [0.1, 0.15, 0.2], [0, 2, 0]) // Tiny stutter
             }}
             className="flex flex-col items-center"
           >
-             <div className="w-px h-24 bg-gradient-to-b from-transparent via-zinc-100 to-transparent" />
-             <span className="mt-8 text-[9px] uppercase tracking-[1.5em] text-zinc-300 font-black ml-[1.5em]">Act III</span>
+             <div className="w-px h-20 bg-gradient-to-b from-transparent via-zinc-100 to-transparent" />
+             <span className="mt-8 text-[8px] uppercase tracking-[1.2em] text-zinc-300 font-black ml-[1.2em]">Act III</span>
           </motion.div>
         </div>
 
         {/* Scene 2: The Pivot (The emotional threshold) */}
-        <div className="h-screen flex flex-col items-center justify-center sticky top-0 px-8">
+        <div className="h-screen flex flex-col items-center justify-center sticky top-0 px-6 md:px-8">
           <motion.div 
             style={{ 
               opacity: pivotOpacity,
-              scale: useTransform(scrollYProgress, [0.35, 0.45, 0.55, 0.65], [0.99, 1, 1, 1.01])
+              scale: useTransform(scrollYProgress, [0.35, 0.45, 0.55, 0.65], [0.99, 1, 1, 1.01]),
+              y: useTransform(scrollYProgress, [0.4, 0.5, 0.6], [0, -4, 0]) // Subtle instability
             }}
-            className="max-w-6xl w-full flex flex-col items-center space-y-16"
+            className="max-w-6xl w-full flex flex-col items-center space-y-12 md:space-y-16"
           >
-            <div className="space-y-2 text-center mb-12">
-               <span className="text-[9px] font-mono text-zinc-300 uppercase tracking-[0.5em]">trc_int_01</span>
+            <div className="space-y-2 text-center mb-10 md:mb-12">
+               <span className="text-[8px] font-mono text-zinc-300 uppercase tracking-[0.4em]">trc_int_01</span>
             </div>
 
-            <h3 className="text-[clamp(1.8rem,5vw,3.5rem)] font-light tracking-tighter text-zinc-900 leading-[0.95] text-center max-w-3xl">
-              <span className="block mb-6 opacity-15">At some point,</span>
+            <h3 className="text-[clamp(1.6rem,4.5vw,3rem)] font-light tracking-tighter text-zinc-900 leading-[1] text-center max-w-2xl px-4">
+              <span className="block mb-6 opacity-10">At some point,</span>
               <span className="block">the noise stopped</span>
-              <span className="block md:ml-[8vw] text-zinc-400 italic">
+              <span className="block md:ml-[6vw] text-zinc-400 italic">
                 feeling <span className="inline-block whitespace-nowrap text-zinc-800 not-italic font-normal">external.</span>
               </span>
             </h3>
@@ -74,35 +81,34 @@ export const Act3Section: React.FC = () => {
             {/* Visual Rupture: Displacement moment - even quieter instability */}
             <motion.div 
                style={{ 
-                 opacity: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 0.08, 0]),
-                 x: useTransform(scrollYProgress, [0.5, 0.53, 0.57, 0.6], [0, 6, -6, 0]),
-                 skewX: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 3, 0]),
-                 scaleY: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [1, 1.1, 1])
+                 opacity: useTransform(scrollYProgress, [0.5, 0.55, 0.61, 0.62, 0.65], [0, 0.05, 0.05, 0.02, 0]),
+                 x: useTransform(scrollYProgress, [0.5, 0.53, 0.57, 0.6, 0.63], [0, 4, -4, 2, 0]),
+                 skewX: useTransform(scrollYProgress, [0.5, 0.55, 0.65], [0, 2, 0])
                }}
-               className="pointer-events-none select-none text-[6vw] font-black text-zinc-950/[0.02] uppercase tracking-tighter"
+               className="pointer-events-none select-none text-[5vw] font-black text-zinc-950/[0.015] uppercase tracking-tighter"
             >
               SIGNAL_DRIFT
             </motion.div>
 
-            <div className="pt-32 opacity-10">
-               <div className="w-px h-48 bg-zinc-900 mx-auto" />
+            <div className="pt-24 md:pt-32 opacity-[0.05]">
+               <div className="w-px h-40 bg-zinc-900 mx-auto" />
             </div>
           </motion.div>
         </div>
 
         {/* Scene 3: Internal Fragments (Reduced and Interrupted) */}
-        <div className="min-h-[150vh] py-[20vh] px-8 md:px-24 flex flex-col items-center">
-          <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-24 relative">
+        <div className="min-h-[150vh] py-[15vh] md:py-[20vh] px-8 md:px-24 flex flex-col items-center">
+          <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24 relative">
             
             {/* The Spine of Interruption */}
             <div className="hidden lg:block lg:col-span-1 border-l border-zinc-100 relative h-full">
                <motion.div 
                  style={{ height: useTransform(scrollYProgress, [0.75, 0.95], ["0%", "100%"]) }}
-                 className="absolute top-0 left-[-1px] w-[1px] bg-zinc-300 opacity-20"
+                 className="absolute top-0 left-[-1px] w-[1px] bg-zinc-300 opacity-[0.15]"
                />
             </div>
 
-            <div className="lg:col-span-11 space-y-[25vh] pb-[10vh]">
+            <div className="lg:col-span-11 space-y-[20vh] md:space-y-[25vh] pb-[5vh] md:pb-[10vh]">
               <InternalFragment 
                 id="INT-05" 
                 title="Shift."
@@ -114,20 +120,20 @@ export const Act3Section: React.FC = () => {
         </div>
 
         {/* Closing Breath (Transition to Act 4) */}
-         <div className="h-[40vh] flex flex-col items-center justify-center px-8 text-center bg-white relative z-20">
+         <div className="h-[35vh] flex flex-col items-center justify-center px-8 text-center bg-white relative z-20">
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-6"
+              transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="space-y-4 md:space-y-6"
             >
                <div className="space-y-3">
-                 <div className="w-px h-10 bg-zinc-950/10 mx-auto" />
-                 <span className="text-[8px] uppercase tracking-[0.6em] text-zinc-400 font-bold block">Restore Signal</span>
+                 <div className="w-px h-8 bg-zinc-950/10 mx-auto" />
+                 <span className="text-[8px] uppercase tracking-[0.5em] text-zinc-400 font-bold block">Restore Signal</span>
                </div>
                
                <div className="max-w-xs mx-auto">
-                  <p className="text-[8px] text-zinc-400/50 font-light leading-relaxed uppercase tracking-[0.2em]">
+                  <p className="text-[8px] text-zinc-300 font-light leading-relaxed uppercase tracking-[0.2em]">
                     The investigation persists.
                   </p>
                </div>
@@ -153,48 +159,67 @@ const InternalFragment: React.FC<InternalProps> = ({ id, title, text, annotation
     offset: ["start end", "center center", "end start"]
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.35, 0.6, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.35, 0.6, 1], [30, 0, 0, -30]);
+  const opacity = useTransform(scrollYProgress, [0, 0.38, 0.58, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [25, 0, 0, -25]);
   
-  // Visual rupture - slight horizontal drift and skew
-  const drift = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [align === 'right' ? 30 : -30, 0, 0, align === 'right' ? -15 : 15]);
-  const skew = useTransform(scrollYProgress, [0.1, 0.4, 0.6, 0.9], [align === 'right' ? 2 : -2, 0, 0, align === 'right' ? -1 : 1]);
+  // Interaction Instability: Non-linear jittery drift
+  const drift = useTransform(
+    scrollYProgress, 
+    [0, 0.2, 0.4, 0.5, 0.6, 0.8, 1], 
+    [
+      align === 'right' ? 20 : -20, 
+      align === 'right' ? 10 : -10, 
+      0, 
+      align === 'right' ? 2 : -2, // Subtle mid-point shift
+      0, 
+      align === 'right' ? -10 : 10, 
+      align === 'right' ? -20 : 20
+    ]
+  );
+  
+  const skew = useTransform(scrollYProgress, [0.1, 0.4, 0.6, 0.9], [align === 'right' ? 1.5 : -1.5, 0, 0, align === 'right' ? -1 : 1]);
 
   return (
     <motion.div 
       ref={ref}
-      style={{ opacity, y, x: drift, skewY: skew }}
+      style={{ 
+        opacity, 
+        y, 
+        x: drift, 
+        skewY: skew,
+        transition: { duration: 1.2, ease: "easeOut" } // Softer response
+      }}
       className={`relative w-full flex ${align === 'right' ? 'justify-end' : 'justify-start'}`}
     >
-      <div className={`max-w-xl space-y-8 ${align === 'right' ? 'text-right' : 'text-left'}`}>
+      <div className={`max-w-lg space-y-6 md:space-y-8 ${align === 'right' ? 'text-right' : 'text-left'}`}>
         {/* Level 3: Metadata */}
         <motion.div 
-          style={{ x: useTransform(scrollYProgress, [0.3, 0.5], [10, 0]) }}
-          className={`flex items-center gap-6 ${align === 'right' ? 'flex-row-reverse' : ''}`}
+          style={{ x: useTransform(scrollYProgress, [0.35, 0.5], [8, 0]) }}
+          className={`flex items-center gap-4 md:gap-6 ${align === 'right' ? 'flex-row-reverse' : ''}`}
         >
-           <span className="text-[8px] font-mono text-zinc-200 tracking-[0.4em] uppercase">{id}</span>
-           <div className="w-8 h-px bg-zinc-50" />
-           <span className="text-[8px] font-mono text-zinc-300 uppercase tracking-widest">{annotation}</span>
+           <span className="text-[8px] font-mono text-zinc-100 tracking-[0.4em] uppercase">{id}</span>
+           <div className="w-6 h-px bg-zinc-50" />
+           <span className="text-[8px] font-mono text-zinc-200 uppercase tracking-widest">{annotation}</span>
         </motion.div>
 
         {/* Level 2: Secondary Reflection */}
-        <div className="space-y-6">
-          <h5 className="text-[clamp(1.2rem,2.5vw,2rem)] font-light text-zinc-900 leading-tight tracking-tight uppercase">
+        <div className="space-y-4 md:space-y-6">
+          <h5 className="text-[clamp(1.1rem,2.2vw,1.8rem)] font-light text-zinc-900 leading-tight tracking-tight uppercase">
             {title}
           </h5>
           
           {/* Level 4: Detail Fragment */}
           <div className="max-w-md">
-            <p className="text-[13px] md:text-sm font-light text-zinc-400 leading-[1.7] tracking-wide">
+            <p className="text-[12px] md:text-sm font-light text-zinc-400 leading-[1.6] tracking-wide">
                {text}
             </p>
           </div>
         </div>
 
         {/* Intimate Trace */}
-        <div className={`flex flex-col ${align === 'right' ? 'items-end' : 'items-start'} space-y-4 pt-4 opacity-40`}>
-           <div className="w-px h-12 bg-zinc-100" />
-           <span className="text-[8px] font-mono text-zinc-200 uppercase tracking-tighter">[ TRACE_REC_INTERNAL ]</span>
+        <div className={`flex flex-col ${align === 'right' ? 'items-end' : 'items-start'} space-y-3 pt-3 opacity-[0.2]`}>
+           <div className="w-px h-10 bg-zinc-100" />
+           <span className="text-[7px] font-mono text-zinc-200 uppercase tracking-tighter">[ TRACE_REC_INTERNAL ]</span>
         </div>
       </div>
     </motion.div>
