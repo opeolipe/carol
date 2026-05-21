@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { CinematicHero } from '../components/CinematicHero';
 import { ObservationSection } from '../components/ObservationSection';
 import { Act3Section } from '../components/Act3Section';
+import { Act4Section } from '../components/Act4Section';
 ---
 
 <BaseLayout title="Caroline Ratuolivia" minimal={true}>
@@ -11,6 +12,8 @@ import { Act3Section } from '../components/Act3Section';
   <ObservationSection client:load />
 
   <Act3Section client:load />
+
+  <Act4Section client:load />
 
   <footer class="bg-zinc-50 text-zinc-400 py-32 px-12 md:px-24 border-t border-zinc-100">
     <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16">
