@@ -27,14 +27,14 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
     <motion.div 
       ref={ref}
       style={{ opacity, filter: useTransform(blur, (v) => `blur(${v}px)`), y, scale }}
-      className="min-h-screen flex flex-col items-center justify-center py-32 md:py-48 px-8 md:px-24 mb-[5vh] md:mb-[10vh]"
+      className="min-h-screen flex flex-col items-center justify-center py-32 md:py-48 px-8 md:px-24 mb-[15vh] md:mb-[25vh]"
     >
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24 relative">
         {/* Investigative Rails - Visible on Larger Screens for Structural Rhythm */}
         <div className="hidden lg:block lg:col-span-1 border-l border-zinc-100 relative h-full">
            <div className="absolute top-0 left-[-4px] w-2 h-2 rounded-full bg-zinc-200" />
            <motion.div 
-             style={{ height: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
+             style={{ height: useTransform(scrollYProgress, [0, 0.5, 1], ["0%", "100%", "100%"]) }}
              className="absolute top-0 left-[-1px] w-[2px] bg-zinc-900"
            />
         </div>
@@ -67,7 +67,10 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
              <div className="space-y-12">
                 {/* Level 2: Primary Observation Statement - Strict Width Control */}
                 <div className="space-y-6">
-                   <span className="text-[9px] uppercase tracking-[0.8em] text-zinc-300 font-black block">Signal Extract</span>
+                   <div className="flex items-center gap-4">
+                      <div className="w-4 h-px bg-zinc-200" />
+                      <span className="text-[9px] uppercase tracking-[0.8em] text-zinc-300 font-black block">Signal Extract</span>
+                   </div>
                    <p className="text-[clamp(1.5rem,3vw,2.5rem)] font-light text-zinc-700 leading-[1.3] max-w-[18ch] md:max-w-[22ch]">
                      {observation}
                    </p>
@@ -84,7 +87,7 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
              </div>
 
              {/* Level 4: Fragmented Annotations - Investigative Rhythm */}
-             <div className="space-y-16 md:pt-32">
+             <div className="space-y-16 md:space-y-24 md:pt-32">
                 {annotations?.map((note, i) => (
                   <motion.div 
                     key={i}
@@ -96,9 +99,9 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
                   >
                     <div className="flex items-center gap-4">
                        <div className="w-2 h-2 border border-zinc-100 rounded-sm group-hover:bg-zinc-900 transition-all duration-500" />
-                       <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-300 block">annotation_trc_{i+1}</span>
+                       <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-zinc-300 block">trace_v{i+1}</span>
                     </div>
-                    <p className="text-sm md:text-base font-light text-zinc-500 leading-relaxed pl-6 border-l border-zinc-100 group-hover:border-zinc-300 transition-colors duration-500">
+                    <p className="text-sm md:text-base font-light text-zinc-500 leading-relaxed md:leading-[1.7] pl-6 border-l border-zinc-100 group-hover:border-zinc-300 transition-all duration-500">
                       {note}
                     </p>
                     {/* Hidden Metadata Detail */}
@@ -129,36 +132,36 @@ export const ObservationSection: React.FC = () => {
       id: "TRC-01",
       timestamp: "May 2026",
       title: "Architecture of Trust",
-      observation: "Most scams don’t exploit technology first. They exploit urgency. Interfaces create permission before they create value.",
+      observation: "Most scams don’t exploit technology first. They exploit urgency.",
       metadata: "SCAM_PSYCHOLOGY_01",
       annotations: [
-        "Urgency as a proxy for trust",
-        "The psychological cost of the 'Red Label'",
-        "Design as a weapon of misdirection"
+        "Urgency as a proxy for digital trust.",
+        "The psychological cost of the 'Red Label'.",
+        "Design as a weapon of misdirection."
       ]
     },
     {
       id: "TRC-04",
       timestamp: "June 2026",
       title: "Signals and Comfort",
-      observation: "Most users don’t read technical signals. They read comfort. If an interface feels familiar, it is assumed to be safe. Familiarity is the primary vulnerability.",
+      observation: "Familiarity is the primary vulnerability.",
       metadata: "SYSTEM_BEHAVIOR_04",
       annotations: [
-        "The 'Green Padlock' fallacy",
-        "Legacy UI patterns used in modern exploits",
-        "Human-centered insecurity"
+        "The 'Green Padlock' fallacy in trust systems.",
+        "Legacy UI patterns used in modern behavioral triggers.",
+        "Human-centered insecurity."
       ]
     },
     {
       id: "TRC-09",
       timestamp: "July 2026",
       title: "The Silent Watcher",
-      observation: "Observation is never passive. Every pixel that tracks a gaze changes the behavior it was meant to measure. The internet is built on observed performance.",
+      observation: "Every pixel that tracks a gaze changes the behavior it was meant to measure.",
       metadata: "SIGNAL_INTERFERENCE_09",
       annotations: [
-        "Metrics as reality distortion",
-        "Privacy as an endangered architectural choice",
-        "The observer's paradox in digital space"
+        "Metrics as reality distortion.",
+        "Privacy as an endangered architectural choice.",
+        "The observer's paradox in digital space."
       ]
     }
   ];
@@ -180,31 +183,57 @@ export const ObservationSection: React.FC = () => {
       </motion.div>
 
       <div className="relative z-10 pt-48 md:pt-64">
-        <div className="max-w-7xl mx-auto px-8 mb-64 md:mb-[40vh]">
+        <div className="max-w-7xl mx-auto px-8 mb-64 md:mb-[50vh] relative">
+          {/* Investigative Trace Background (Desktop Only) */}
+          <div className="absolute top-0 right-0 hidden lg:block opacity-[0.4]">
+             <span className="text-[150px] font-bold text-zinc-50 font-mono select-none tracking-tighter">02</span>
+          </div>
+
           <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
+            initial={{ opacity: 0, scale: 0.99 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-            className="space-y-12 md:space-y-24"
+            transition={{ duration: 2.5, ease: [0.16, 1, 0.3, 1] }}
+            className="space-y-16 md:space-y-32 relative"
           >
              <div className="flex flex-col md:flex-row md:items-center gap-6">
                 <span className="text-[10px] uppercase tracking-[0.8em] text-zinc-400 font-black block">Signal Archive</span>
                 <div className="hidden md:block w-px h-16 bg-zinc-100" />
-                <span className="text-[10px] font-mono text-zinc-300">ACCESS_GRANTED://ACT_II</span>
+                <div className="flex items-center gap-4">
+                  <span className="text-[9px] font-mono text-zinc-300">ACCESS_GRANTED://ROOT</span>
+                  <div className="w-2 h-2 rounded-full bg-zinc-100 animate-pulse" />
+                </div>
              </div>
              
-             <h3 className="text-[clamp(3rem,10vw,12rem)] font-light tracking-tight text-zinc-900 leading-[0.85] max-w-7xl">
-               Investigation is a <br /> 
-               <span className="md:ml-[15vw]">quiet act.</span> <br />
-               <span className="text-zinc-400 italic md:ml-[30vw]">Noticing patterns.</span>
-             </h3>
+             <div className="relative">
+               <h3 className="text-[clamp(2.5rem,9vw,11rem)] font-light tracking-tight text-zinc-900 leading-[0.85] max-w-7xl relative z-10">
+                 <span className="block mb-4 md:mb-0">Investigation is a</span> 
+                 <span className="block md:ml-[12vw] mb-4 md:mb-0">quiet act.</span> 
+                 <span className="text-zinc-400 italic block md:ml-[28vw]">Noticing patterns.</span>
+               </h3>
 
-             <div className="max-w-sm pt-8 md:ml-[30vw] border-l border-zinc-100 pl-8">
-                <p className="text-[11px] font-light text-zinc-500 leading-[1.8] uppercase tracking-[0.25em]">
+               {/* Anchor Annotation Fragments */}
+               <motion.div 
+                 initial={{ opacity: 0 }}
+                 whileInView={{ opacity: 0.3 }}
+                 transition={{ delay: 1, duration: 2 }}
+                 className="absolute -top-12 left-0 hidden md:flex items-center gap-3"
+               >
+                 <div className="w-1 h-1 rounded-full bg-zinc-300" />
+                 <span className="text-[8px] font-mono text-zinc-300 uppercase tracking-[0.4em]">act_ii_entry.trace</span>
+               </motion.div>
+             </div>
+
+             <div className="max-w-md pt-8 md:ml-[32vw] border-l border-zinc-100 pl-8 md:pl-12 space-y-8">
+                <p className="text-[11px] md:text-xs font-light text-zinc-500 leading-[2] uppercase tracking-[0.25em]">
                   A documented exploration <br />
-                  of digital trust, behavioral <br />
-                  triggers, and systemic ambiguity.
+                  of <span className="text-zinc-800 font-medium whitespace-nowrap italic">digital trust</span>, <span className="text-zinc-800 font-medium whitespace-nowrap">behavioral triggers</span>, <br />
+                  and <span className="text-zinc-800 font-medium whitespace-nowrap">systemic ambiguity</span>.
                 </p>
+
+                <div className="flex items-center gap-4 opacity-50">
+                   <div className="w-8 h-px bg-zinc-200" />
+                   <span className="text-[8px] font-mono text-zinc-300 uppercase tracking-widest italic">Archived // 2026.05.21</span>
+                </div>
              </div>
           </motion.div>
         </div>
