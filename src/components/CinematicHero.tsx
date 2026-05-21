@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 
 const NarrativeStep = ({ text, delay, duration = 2 }: { text: string; delay: number; duration?: number }) => (
   <motion.p
@@ -19,34 +19,40 @@ const NarrativeStep = ({ text, delay, duration = 2 }: { text: string; delay: num
 
 export const CinematicHero: React.FC = () => {
   const [step, setStep] = useState(0); 
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   
+  // Interaction Physics: Smooth Mouse Tracking
+  const mouseX = useSpring(0, { stiffness: 20, damping: 40 });
+  const mouseY = useSpring(0, { stiffness: 20, damping: 40 });
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
 
   const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.05]); 
-  const blurValue = useTransform(scrollYProgress, [0, 0.6], [0, 6]); 
-  const signalClarity = useTransform(scrollYProgress, [0, 0.5], [0.02, 0.12]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.08]); 
+  const blurValue = useTransform(scrollYProgress, [0, 0.6], [0, 8]); 
+  const signalClarity = useTransform(scrollYProgress, [0, 0.5], [0.02, 0.15]);
+  
+  // Mobile Environmental Drift
+  const mobileDrift = useTransform(scrollYProgress, [0, 1], [0, 40]);
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setStep(1), 2000), 
-      setTimeout(() => setStep(2), 7000), 
-      setTimeout(() => setStep(3), 12000), 
-      setTimeout(() => setStep(4), 18000), // Name
-      setTimeout(() => setStep(5), 21000), // Subtext
-      setTimeout(() => setStep(6), 24000), // Scroll Hint
+      setTimeout(() => setStep(1), 3000), 
+      setTimeout(() => setStep(2), 9500), 
+      setTimeout(() => setStep(3), 16000), 
+      setTimeout(() => setStep(4), 22000), // Identity Reveal
+      setTimeout(() => setStep(5), 26000), // Narrative Subtext
+      setTimeout(() => setStep(6), 31000), // Interaction Hint
     ];
 
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({
-        x: (e.clientX / window.innerWidth - 0.5) * 20,
-        y: (e.clientY / window.innerHeight - 0.5) * 20
-      });
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      mouseX.set(x);
+      mouseY.set(y);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -54,54 +60,63 @@ export const CinematicHero: React.FC = () => {
       timers.forEach(clearTimeout);
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [mouseX, mouseY]);
+
+  // Motion Hierarchy & Signal Gravity Values
+  const ambientX = useTransform(mouseX, [-1, 1], [-15, 15]);
+  const ambientY = useTransform(mouseY, [-1, 1], [-15, 15]);
+  const driftX = useTransform(mouseX, [-1, 1], [10, -10]);
+  const driftY = useTransform(mouseY, [-1, 1], [10, -10]);
+  const typographyX = useTransform(mouseX, [-1, 1], [5, -5]);
+  const typographyY = useTransform(mouseY, [-1, 1], [5, -5]);
 
   return (
     <div ref={containerRef} className="relative h-[250vh] w-full bg-[#fbfbf9] overflow-hidden">
-      {/* Cinematic Background Atmosphere (The Noise) */}
+      {/* Level 1: Deep Ambient Atmospherics (Steady) */}
       <motion.div 
         style={{ 
           scale, 
           filter: useTransform(blurValue, (v) => `blur(${v}px)`),
-          x: mousePos.x * 0.5,
-          y: mousePos.y * 0.5
         }}
         className="fixed inset-0 z-0 pointer-events-none"
       >
-        {/* Deep Ambient Layers */}
-        <div 
-          className="absolute inset-0 opacity-[0.35] blur-[150px]"
+        <motion.div 
+          style={{ x: ambientX, y: ambientY }}
+          className="absolute inset-0 opacity-[0.3] blur-[140px]"
           style={{
-            background: 'radial-gradient(circle at 15% 15%, #f1f5f9 0%, transparent 70%), radial-gradient(circle at 85% 85%, #fefce8 0%, transparent 70%)'
+            background: 'radial-gradient(circle at 20% 20%, #f1f5f9 0%, transparent 60%), radial-gradient(circle at 80% 80%, #fefce8 0%, transparent 60%)'
           }}
         />
         
-        {/* Drifting Light Fields - Decelerated for stillness */}
+        {/* Level 2: Drifting Light Fields (Slow Secondary Motion) */}
         <motion.div 
           animate={{ 
-            x: [0, 10, -5, 0], 
-            y: [0, -5, 10, 0],
+            x: [0, 8, -4, 0], 
+            y: [0, -4, 8, 0],
           }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          className="absolute inset-0 opacity-[0.25] blur-[180px]"
+          transition={{ duration: 55, repeat: Infinity, ease: "linear" }}
+          style={{ x: driftX, y: driftY }}
+          className="absolute inset-0 opacity-[0.2] blur-[160px]"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 60%)'
+            background: 'radial-gradient(circle at 50% 50%, #eff6ff 0%, transparent 50%)'
           }}
         />
 
-        {/* Signal Fragments (Midground) */}
+        {/* Level 3: Midground Signal Fragments (Static Environment) */}
         <motion.div 
-          style={{ opacity: signalClarity }}
+          style={{ 
+            opacity: signalClarity,
+            y: mobileDrift 
+          }}
           className="absolute inset-0 flex items-center justify-center overflow-hidden"
         >
-          <div className="w-full h-full noise-texture mix-blend-overlay scale-150 rotate-12" />
+          <div className="w-full h-full noise-texture mix-blend-overlay scale-[1.7] rotate-6" />
         </motion.div>
         
-        {/* Surface Texture */}
-        <div className="absolute inset-0 noise-texture opacity-[0.05]" />
+        <div className="absolute inset-0 noise-texture opacity-[0.04]" />
       </motion.div>
 
-      {/* Narrative Sequence (Foreground) */}
+      {/* Narrative Sequence Foreground */}
       <motion.div 
         style={{ opacity }}
         className="fixed inset-0 z-10 flex flex-col items-center justify-center px-8"
@@ -111,13 +126,13 @@ export const CinematicHero: React.FC = () => {
             {step === 1 && (
               <motion.div
                 key="s1"
-                initial={{ opacity: 0, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, filter: 'blur(10px)' }}
-                transition={{ duration: 3, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, filter: 'blur(8px)', y: 15 }}
+                animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                exit={{ opacity: 0, filter: 'blur(8px)', y: -15 }}
+                transition={{ duration: 4, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute w-full text-center px-6"
               >
-                <p className="text-2xl md:text-3xl font-light tracking-tight text-zinc-800/60 leading-tight">
+                <p className="text-xl md:text-2xl font-light tracking-tight text-zinc-800/40 leading-tight">
                   <span className="inline-block whitespace-nowrap">The internet</span> <br className="md:hidden" />
                   <span className="inline-block whitespace-nowrap">remembers everything.</span>
                 </p>
@@ -126,13 +141,13 @@ export const CinematicHero: React.FC = () => {
             {step === 2 && (
               <motion.div
                 key="s2"
-                initial={{ opacity: 0, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, filter: 'blur(10px)' }}
-                transition={{ duration: 3, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, filter: 'blur(8px)', y: 15 }}
+                animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                exit={{ opacity: 0, filter: 'blur(8px)', y: -15 }}
+                transition={{ duration: 4, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute w-full text-center px-6"
               >
-                <p className="text-2xl md:text-3xl font-light tracking-tight text-zinc-800/60 leading-tight">
+                <p className="text-xl md:text-2xl font-light tracking-tight text-zinc-800/40 leading-tight">
                   <span className="inline-block whitespace-nowrap">Most people ignore</span> <br className="md:hidden" />
                   <span className="inline-block whitespace-nowrap">the signals.</span>
                 </p>
@@ -141,13 +156,13 @@ export const CinematicHero: React.FC = () => {
             {step === 3 && (
               <motion.div
                 key="s3"
-                initial={{ opacity: 0, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, filter: 'blur(10px)' }}
-                transition={{ duration: 3, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, filter: 'blur(8px)', y: 15 }}
+                animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                exit={{ opacity: 0, filter: 'blur(8px)', y: -15 }}
+                transition={{ duration: 4, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute w-full text-center px-6"
               >
-                <p className="text-2xl md:text-3xl font-light tracking-tight text-zinc-800/60 leading-tight">
+                <p className="text-xl md:text-2xl font-light tracking-tight text-zinc-800/40 leading-tight">
                   I couldn’t.
                 </p>
               </motion.div>
@@ -158,18 +173,18 @@ export const CinematicHero: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ 
                   opacity: 1,
-                  x: mousePos.x * 0.2,
-                  y: mousePos.y * 0.2
+                  x: typographyX,
+                  y: typographyY
                 }}
-                transition={{ duration: 3, ease: "easeOut" }}
-                className="text-center"
+                transition={{ duration: 3.5, ease: [0.22, 1, 0.36, 1] }}
+                className="text-center group/hero"
               >
-                <div className="overflow-hidden mb-6 md:mb-8">
+                <div className="overflow-hidden mb-4 md:mb-6">
                   <motion.h1
-                    initial={{ y: "100%" }}
+                    initial={{ y: "105%" }}
                     animate={{ y: 0 }}
-                    transition={{ duration: 2.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-[clamp(2.5rem,10vw,6rem)] font-bold tracking-[-0.04em] uppercase text-zinc-900 leading-[0.85]"
+                    transition={{ duration: 3, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-[clamp(1.8rem,8vw,5rem)] font-bold tracking-[-0.04em] uppercase text-zinc-900 leading-[0.85] transition-all duration-1000 group-hover/hero:tracking-[-0.02em]"
                   >
                     Caroline <br /> Ratuolivia
                   </motion.h1>
@@ -178,24 +193,24 @@ export const CinematicHero: React.FC = () => {
                 <AnimatePresence>
                   {step >= 5 && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
                       className="space-y-4 md:space-y-6"
                     >
                       <div className="w-8 md:w-12 h-px bg-zinc-200 mx-auto opacity-30" />
                       <motion.p 
                         animate={{ 
-                          opacity: [0.3, 0.4, 0.3],
-                          x: [0, -0.5, 0.5, 0],
+                          opacity: [0.2, 0.3, 0.2],
+                          x: [0, -0.3, 0.3, 0],
                         }}
                         transition={{ 
-                          duration: 8, 
+                          duration: 12, 
                           repeat: Infinity, 
                           ease: "linear" 
                         }}
-                        className="text-[9px] md:text-xs uppercase tracking-[0.3em] md:tracking-[0.4em] font-medium text-zinc-400 select-none px-6 md:px-0"
+                        className="text-[8px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.4em] font-medium text-zinc-400 select-none px-6 md:px-0"
                       >
                         <span className="inline-block whitespace-nowrap">building thoughtful things</span> <br className="md:hidden" />
                         for a <span className="inline-block whitespace-nowrap">noisy internet</span>
@@ -212,18 +227,22 @@ export const CinematicHero: React.FC = () => {
         <AnimatePresence>
           {step >= 6 && (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 3 }}
+              transition={{ duration: 3, ease: [0.22, 1, 0.36, 1] }}
               className="absolute bottom-12 md:bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 md:gap-6"
             >
               <div className="relative group interactive cursor-pointer">
-                 <span className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.6em] text-zinc-400 font-bold block transition-all group-hover:tracking-[0.8em]">Scroll</span>
+                 <span className="text-[8px] md:text-[9px] uppercase tracking-[0.4em] md:tracking-[0.6em] text-zinc-400 font-bold block transition-all group-hover:tracking-[0.8em] group-hover:text-zinc-600">Scroll</span>
+                 <motion.div 
+                   className="absolute -inset-4 bg-zinc-400/0 rounded-full blur-xl group-hover:bg-zinc-400/5 transition-all"
+                   layoutId="scroll-glow"
+                 />
               </div>
               <motion.div 
-                animate={{ height: [20, 40, 20], translateY: [0, 6, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                animate={{ height: [24, 44, 24], translateY: [0, 8, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 className="w-px bg-gradient-to-b from-zinc-300 to-transparent h-6 md:h-10" 
               />
             </motion.div>
@@ -243,4 +262,5 @@ export const CinematicHero: React.FC = () => {
     </div>
   );
 };
+
 

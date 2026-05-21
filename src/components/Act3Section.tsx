@@ -19,7 +19,7 @@ export const Act3Section: React.FC = () => {
   return (
     <section 
       ref={sectionRef} 
-      className="relative min-h-[350vh] bg-[#fdfdfc] z-30"
+      className="relative min-h-[300vh] bg-[#fdfdfc] z-30"
     >
       {/* Soft Cinematic Atmosphere */}
       <motion.div 
@@ -63,23 +63,23 @@ export const Act3Section: React.FC = () => {
                <span className="text-[9px] font-mono text-zinc-300 uppercase tracking-[0.5em]">trc_int_01</span>
             </div>
 
-            <h3 className="text-[clamp(2rem,6vw,5rem)] font-light tracking-tighter text-zinc-900 leading-[0.9] text-center max-w-4xl">
-              <span className="block mb-8 opacity-20">At some point,</span>
+            <h3 className="text-[clamp(1.8rem,5vw,3.5rem)] font-light tracking-tighter text-zinc-900 leading-[0.95] text-center max-w-3xl">
+              <span className="block mb-6 opacity-15">At some point,</span>
               <span className="block">the noise stopped</span>
-              <span className="block md:ml-[10vw] text-zinc-400 italic">
-                feeling <span className="inline-block whitespace-nowrap text-zinc-900 not-italic font-normal">external.</span>
+              <span className="block md:ml-[8vw] text-zinc-400 italic">
+                feeling <span className="inline-block whitespace-nowrap text-zinc-800 not-italic font-normal">external.</span>
               </span>
             </h3>
 
-            {/* Visual Rupture: Displacement moment - now quieter */}
+            {/* Visual Rupture: Displacement moment - even quieter instability */}
             <motion.div 
                style={{ 
-                 opacity: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 0.15, 0]),
-                 x: useTransform(scrollYProgress, [0.5, 0.53, 0.57, 0.6], [0, 10, -10, 0]),
-                 skewX: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 5, 0]),
-                 scaleY: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [1, 1.2, 1])
+                 opacity: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 0.08, 0]),
+                 x: useTransform(scrollYProgress, [0.5, 0.53, 0.57, 0.6], [0, 6, -6, 0]),
+                 skewX: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [0, 3, 0]),
+                 scaleY: useTransform(scrollYProgress, [0.5, 0.55, 0.6], [1, 1.1, 1])
                }}
-               className="pointer-events-none select-none text-[8vw] font-black text-zinc-950/[0.03] uppercase tracking-tighter"
+               className="pointer-events-none select-none text-[6vw] font-black text-zinc-950/[0.02] uppercase tracking-tighter"
             >
               SIGNAL_DRIFT
             </motion.div>
@@ -102,11 +102,11 @@ export const Act3Section: React.FC = () => {
                />
             </div>
 
-            <div className="lg:col-span-11 space-y-[30vh] pb-[10vh]">
+            <div className="lg:col-span-11 space-y-[25vh] pb-[10vh]">
               <InternalFragment 
                 id="INT-05" 
                 title="Shift."
-                text="Everything started sounding urgent. The signals I used to map stopped resolving cleanly." 
+                text="The mapping failed. Signals refused to isolate." 
                 annotation="trace_int: signal_drift"
               />
             </div>
@@ -114,20 +114,20 @@ export const Act3Section: React.FC = () => {
         </div>
 
         {/* Closing Breath (Transition to Act 4) */}
-         <div className="h-[60vh] flex flex-col items-center justify-center px-8 text-center bg-white relative z-20">
+         <div className="h-[40vh] flex flex-col items-center justify-center px-8 text-center bg-white relative z-20">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-8"
+              transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-6"
             >
-               <div className="space-y-4">
-                 <div className="w-px h-12 bg-zinc-950/20 mx-auto" />
-                 <span className="text-[9px] uppercase tracking-[0.8em] text-zinc-400 font-bold block">Restore Signal</span>
+               <div className="space-y-3">
+                 <div className="w-px h-10 bg-zinc-950/10 mx-auto" />
+                 <span className="text-[8px] uppercase tracking-[0.6em] text-zinc-400 font-bold block">Restore Signal</span>
                </div>
                
                <div className="max-w-xs mx-auto">
-                  <p className="text-[9px] text-zinc-300 font-light leading-relaxed uppercase tracking-[0.2em]">
+                  <p className="text-[8px] text-zinc-400/50 font-light leading-relaxed uppercase tracking-[0.2em]">
                     The investigation persists.
                   </p>
                </div>
@@ -166,26 +166,26 @@ const InternalFragment: React.FC<InternalProps> = ({ id, title, text, annotation
       style={{ opacity, y, x: drift, skewY: skew }}
       className={`relative w-full flex ${align === 'right' ? 'justify-end' : 'justify-start'}`}
     >
-      <div className={`max-w-xl space-y-12 ${align === 'right' ? 'text-right' : 'text-left'}`}>
+      <div className={`max-w-xl space-y-8 ${align === 'right' ? 'text-right' : 'text-left'}`}>
         {/* Level 3: Metadata */}
         <motion.div 
-          style={{ x: useTransform(scrollYProgress, [0.3, 0.5], [15, 0]) }}
+          style={{ x: useTransform(scrollYProgress, [0.3, 0.5], [10, 0]) }}
           className={`flex items-center gap-6 ${align === 'right' ? 'flex-row-reverse' : ''}`}
         >
-           <span className="text-[9px] font-mono text-zinc-300 tracking-[0.4em] uppercase">{id}</span>
-           <div className="w-12 h-px bg-zinc-50" />
-           <span className="text-[8px] font-mono text-zinc-400 uppercase tracking-widest">{annotation}</span>
+           <span className="text-[8px] font-mono text-zinc-200 tracking-[0.4em] uppercase">{id}</span>
+           <div className="w-8 h-px bg-zinc-50" />
+           <span className="text-[8px] font-mono text-zinc-300 uppercase tracking-widest">{annotation}</span>
         </motion.div>
 
         {/* Level 2: Secondary Reflection */}
-        <div className="space-y-8">
-          <h5 className="text-[clamp(1.5rem,3vw,2.5rem)] font-light text-zinc-900 leading-tight tracking-tight uppercase">
+        <div className="space-y-6">
+          <h5 className="text-[clamp(1.2rem,2.5vw,2rem)] font-light text-zinc-900 leading-tight tracking-tight uppercase">
             {title}
           </h5>
           
           {/* Level 4: Detail Fragment */}
-          <div className="max-w-lg">
-            <p className="text-sm md:text-base font-light text-zinc-500 leading-[1.8] tracking-wide">
+          <div className="max-w-md">
+            <p className="text-[13px] md:text-sm font-light text-zinc-400 leading-[1.7] tracking-wide">
                {text}
             </p>
           </div>
