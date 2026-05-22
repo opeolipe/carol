@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { setStillnessState, useArchiveStillness, getStillnessState } from './StillnessState';
-import { recordVisit } from './SignalDriftState';
+import { recordVisit, useSideQuestState, useExplorationMemory } from './SignalDriftState';
+import { useEnvironmentalState } from './EnvironmentalTimeState';
 import { Eye, EyeOff, Zap, ShieldAlert, Sparkles, Compass } from 'lucide-react';
 
 export const StillnessHUD = () => {
   const isStill = useArchiveStillness();
+  const { solved } = useSideQuestState();
+  const { totalVisitedCount } = useExplorationMemory();
+  const envState = useEnvironmentalState();
   const [cycleTime, setCycleTime] = useState(24); // Time left in current segment
   const [manualOverride, setManualOverride] = useState(false);
   const [showingDetails, setShowingDetails] = useState(false);
@@ -175,6 +179,36 @@ export const StillnessHUD = () => {
                   <span>INPUT_LATENCY:</span>
                   <span>{isStill ? '350ms' : '0ms'}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span>ANOMALY_STATUS:</span>
+                  <span className={solved ? 'text-emerald-400 font-bold' : 'text-zinc-600'}>
+                    {solved ? 'CORRELATED // RE_SECURED' : 'UNRESOLVED_DISCORDANCE'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>CURIOUS_RESONANCE:</span>
+                  <span className={totalVisitedCount > 0 ? "text-purple-400 font-medium" : "text-zinc-600"}>
+                    {totalVisitedCount > 0 ? `${totalVisitedCount}_SIGNAL_AXES_STABILIZED` : '0_AXES_DEPOSITED'}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-zinc-900/10 pt-1 mt-1 font-semibold">
+                  <span>TEMPORAL_PHASE:</span>
+                  <span className="text-zinc-300 uppercase">{envState.phaseLabel}</span>
+                </div>
+                <div className="flex justify-between text-[6.5px]">
+                  <span>SESSION_COHERENCE:</span>
+                  <span className="text-purple-400">{(envState.sessionIntimacy * 100).toFixed(0)}% [ {envState.sessionSeconds}s ]</span>
+                </div>
+                {envState.sessionIntimacy > 0.4 && (
+                  <p className="text-[6px] tracking-wider leading-relaxed text-purple-300 border-t border-zinc-900/20 pt-1 animate-pulse">
+                     // Intimacy connection active. Vignette shadow framing and calibrated calm state focused for extended exploration.
+                  </p>
+                )}
+                {totalVisitedCount > 0 && (
+                  <p className="text-[6px] tracking-wider leading-relaxed text-purple-400/90 border-t border-zinc-900/20 pt-1">
+                    * {totalVisitedCount} pathway{totalVisitedCount > 1 ? 's' : ''} have solidified in silica.
+                  </p>
+                )}
                 <p className="text-[6.5px] leading-relaxed text-zinc-500 pt-1 border-t border-zinc-900/30">
                   {isStill 
                     ? "The archive is resting. Hover actions are subdued or delayed to preserve context and reduce noise."

@@ -91,8 +91,18 @@ export function recordVisit() {
  * Deterministically drift coordinates or alphanumeric IDs based on overall visits & time.
  * e.g., TRC-7429 -> TRC-7429.043
  */
-export function driftCoordinate(baseCoords: string | undefined, visits: number, timeDrift: number): string {
+export function driftCoordinate(baseCoords: string | undefined, visits: number, timeDrift: number, isVisited = false): string {
   if (!baseCoords) return 'SYS_REF_ALPHA';
+  
+  if (isVisited) {
+    // If the path is stilled/visited, coordinate drift locks entirely to provide a secure anchor
+    return `${baseCoords} [STABLE]`;
+  }
+  
+  // Incorporate Environmental drift speed factor
+  const envFactor = typeof window !== 'undefined' && (window as any).__archiveEnvironmentalState
+    ? (window as any).__archiveEnvironmentalState.driftSpeedFactor
+    : 1.0;
   
   // Check if coordinates look like location pairs, e.g., "51.5°N, 0.12°W"
   const isDegrees = baseCoords.includes('°');
@@ -105,8 +115,8 @@ export function driftCoordinate(baseCoords: string | undefined, visits: number, 
       const numMatch = part.match(/[-+]?[0-9]*\.?[0-9]+/);
       if (numMatch) {
         const val = parseFloat(numMatch[0]);
-        // Shift latitude by visits and timeDrift
-        const shift = (idx === 0 ? 0.0015 : -0.0022) * visits + (timeDrift * 0.004);
+        // Shift latitude by visits and timeDrift, modulated by environmental phase factors
+        const shift = ((idx === 0 ? 0.0015 : -0.0022) * visits + (timeDrift * 0.004)) * envFactor;
         const driftedVal = (val + shift).toFixed(4);
         return part.replace(numMatch[0], driftedVal);
       }
@@ -116,7 +126,7 @@ export function driftCoordinate(baseCoords: string | undefined, visits: number, 
   }
   
   // For alphanumeric IDs like "TRC-7429" or "SYS-TRC-012"
-  const driftVal = Math.abs(visits * 0.004 + timeDrift * 0.08).toFixed(4);
+  const driftVal = Math.abs((visits * 0.004 + timeDrift * 0.08) * envFactor).toFixed(4);
   return `${baseCoords}.${driftVal.split('.')[1] || '0000'}`;
 }
 
@@ -164,3 +174,104 @@ export function driftStateEmphasis(
   
   return originalState;
 }
+
+/**
+ * Check if the user has successfully analyzed and correlated the hidden system anomaly.
+ */
+export function useSideQuestState() {
+  const [solved, setSolved] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const checkState = () => {
+      const isSolved = localStorage.getItem('archive_salvaged_anomaly_v1') === 'true';
+      setSolved(isSolved);
+    };
+
+    checkState();
+
+    // Event listener for live, multi-component synchronization
+    window.addEventListener('archive-anomaly-salvaged', checkState);
+    return () => {
+      window.removeEventListener('archive-anomaly-salvaged', checkState);
+    };
+  }, []);
+
+  const setSolvedState = (val: boolean) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('archive_salvaged_anomaly_v1', val ? 'true' : 'false');
+      window.dispatchEvent(new CustomEvent('archive-anomaly-salvaged'));
+    }
+  };
+
+  return { solved, setSolvedState };
+}
+
+/**
+ * Unified Exploration Memory Hook to provide deep emotional continuity across pages/visits.
+ */
+export function useExplorationMemory() {
+  const [readDossiers, setReadDossiers] = useState<string[]>([]);
+  const [atlasNodes, setAtlasNodes] = useState<string[]>([]);
+  
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const loadHistory = () => {
+      const dossiersStored = localStorage.getItem('archive_memory_v1');
+      const atlasStored = localStorage.getItem('atlas_explore_history_v1');
+      
+      setReadDossiers(dossiersStored ? JSON.parse(dossiersStored) : []);
+      setAtlasNodes(atlasStored ? JSON.parse(atlasStored) : []);
+    };
+
+    loadHistory();
+
+    // Listeners for updates from other pages
+    window.addEventListener('archive_memory_updated', loadHistory);
+    window.addEventListener('atlas_history_updated', loadHistory);
+    
+    // Also listen to storage events (for multi-tab sync)
+    window.addEventListener('storage', loadHistory);
+
+    return () => {
+      window.removeEventListener('archive_memory_updated', loadHistory);
+      window.removeEventListener('atlas_history_updated', loadHistory);
+      window.removeEventListener('storage', loadHistory);
+    };
+  }, []);
+
+  const markDossierRead = (slug: string) => {
+    if (typeof window === 'undefined') return;
+    const dossiersStored = localStorage.getItem('archive_memory_v1');
+    const list: string[] = dossiersStored ? JSON.parse(dossiersStored) : [];
+    if (!list.includes(slug)) {
+      const updated = [...list, slug];
+      localStorage.setItem('archive_memory_v1', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('archive_memory_updated'));
+    }
+  };
+
+  const markAtlasNodeVisited = (nodeId: string) => {
+    if (typeof window === 'undefined') return;
+    const atlasStored = localStorage.getItem('atlas_explore_history_v1');
+    const list: string[] = atlasStored ? JSON.parse(atlasStored) : [];
+    if (!list.includes(nodeId)) {
+      const updated = [...list, nodeId];
+      localStorage.setItem('atlas_explore_history_v1', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('atlas_history_updated'));
+    }
+  };
+
+  const totalVisitedCount = readDossiers.length + atlasNodes.length;
+
+  return {
+    readDossiers,
+    atlasNodes,
+    markDossierRead,
+    markAtlasNodeVisited,
+    totalVisitedCount
+  };
+}
+

@@ -108,9 +108,9 @@ export const CinematicHero: React.FC = () => {
   const typographyY = useTransform(mouseY, [-1, 1], [3, -3]);
 
   return (
-    <div ref={containerRef} className="relative h-[250vh] w-full bg-[#fbfbf9] overflow-hidden">
+    <div ref={containerRef} className="relative h-[250vh] w-full bg-[var(--background)] overflow-hidden">
       {/* Level 0: Pure Backdrop (Dormant Background System) */}
-      <div className="fixed inset-0 z-[-1] bg-[#fbfbf9]" />
+      <div className="fixed inset-0 z-[-1] bg-[var(--background)]" />
 
       {/* Level 1: Deep Ambient Atmospherics (Steady Base) */}
       <motion.div 

@@ -12,13 +12,14 @@ import {
   InvestigationObservation, 
   InvestigationSignal, 
   InvestigationAnnotation,
-  ArchiveReference
+  ArchiveReference,
+  RedactedBlock
 } from '../../components/InvestigationReport';
 
 <InvestigationObservation label="Initial_Scan">
-  Security is often treated as a technical checkbox. A firewall here, an encrypted database there. But for a Product Manager, security is a **trust relationship**. 
+  Security is often treated as a technical checkbox. A firewall here, an encrypted database there. But for a Product Manager, security is a <RedactedBlock>trust relationship</RedactedBlock>. 
 
-  In my transition from traditional product strategy to cybersecurity, I've realized that the biggest vulnerability isn't always a bug in the code—it's a breakdown in the user's understanding of how their data is being used.
+  In my transition from traditional product strategy to cybersecurity, I've realized that the <RedactedBlock>biggest vulnerability</RedactedBlock> isn't always a bug in the code—it's a breakdown in the user's understanding of how their data is being used.
 </InvestigationObservation>
 
 <ArchiveReference label="Origin_Trace: Threat_Modeling" href="/carol/blog/securing-product-lifecycle" />

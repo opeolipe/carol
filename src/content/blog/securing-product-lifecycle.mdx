@@ -13,13 +13,14 @@ import {
   InvestigationEvidence, 
   InvestigationSignal, 
   InvestigationAnnotation,
-  ArchiveReference
+  ArchiveReference,
+  RedactedBlock
 } from '../../components/InvestigationReport';
 
 <InvestigationObservation label="Observation_01">
-  Product Managers often view security as a roadblock—something that slows down velocity and adds friction to the user experience. But in an era of increasing data breaches and heightened user awareness, security is no longer just a technical requirement.
+  Product Managers often view security as a <RedactedBlock>roadblock</RedactedBlock>—something that slows down velocity and adds friction to the user experience. But in an era of increasing data breaches and heightened user awareness, security is no longer just a technical requirement.
 
-  It is a **competitive advantage**.
+  It is a <RedactedBlock>strategic competitive advantage</RedactedBlock>.
 </InvestigationObservation>
 
 <InvestigationSignal title="Beyond the Checklist">

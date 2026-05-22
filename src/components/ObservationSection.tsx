@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'framer-motion';
+import { useArchiveStillness } from './StillnessState';
 
 interface SignalTraceProps {
   id: string;
@@ -198,6 +199,9 @@ const SignalTrace: React.FC<SignalTraceProps> = ({ id, timestamp, title, observa
 
 export const ObservationSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isStill = useArchiveStillness();
+  const [redundancyExpanded, setRedundancyExpanded] = useState(false);
+  const [redundancyHovered, setRedundancyHovered] = useState(false);
   const [viewedIds, setViewedIds] = useState<Set<string>>(new Set());
 
   const handleViewed = (id: string) => {
@@ -254,7 +258,7 @@ export const ObservationSection: React.FC = () => {
   ];
 
   return (
-    <section ref={containerRef} className="relative bg-[#fbfbf9] z-20">
+    <section ref={containerRef} className="relative bg-[var(--background)] z-20">
       {/* Archive Grid System - Interactive Grid */}
       <motion.div 
         style={{ 
@@ -345,19 +349,78 @@ export const ObservationSection: React.FC = () => {
         </div>
 
         {/* Investigative Footer Transition */}
-        <div className="h-[80vh] flex flex-col items-center justify-center p-8 text-center space-y-12">
+        <div className="h-[95vh] flex flex-col items-center justify-center p-8 text-center space-y-12">
             <div className="w-px h-24 bg-gradient-to-b from-zinc-100 to-transparent" />
             <div className="space-y-4">
               <span className="text-[8px] font-mono tracking-[0.4em] text-zinc-300 uppercase">End of Initial Archive</span>
               <p className="text-[10px] text-zinc-400 font-light tracking-widest uppercase">The investigation continues deeper.</p>
             </div>
+            
             <motion.div 
                animate={{ opacity: [0.1, 0.3, 0.1] }}
                transition={{ duration: 5, repeat: Infinity }}
-               className="text-[7px] font-mono text-zinc-200 uppercase tracking-tighter"
+               className="text-[7px] font-mono text-zinc-250 uppercase tracking-tighter"
             >
               [ + Fragmented Metadata Recovered ]
             </motion.div>
+
+            {/* Decoy Footprint Signal Quest Asset */}
+            <div className="pt-6 flex flex-col items-center">
+              <motion.button
+                type="button"
+                onClick={() => {
+                  if (isStill) {
+                    setRedundancyExpanded(!redundancyExpanded);
+                  }
+                }}
+                onMouseEnter={() => setRedundancyHovered(true)}
+                onMouseLeave={() => setRedundancyHovered(false)}
+                className={`text-[8px] font-mono uppercase tracking-[0.2em] px-4 py-2 border rounded transition-all duration-1000 select-none cursor-pointer ${
+                  isStill
+                    ? 'border-purple-300 bg-purple-500/10 text-purple-700 hover:bg-purple-550/20'
+                    : 'border-dashed border-zinc-200 text-zinc-300 hover:border-zinc-300 hover:text-zinc-500 bg-transparent'
+                }`}
+                animate={!isStill ? { x: [0, -3, 3, -1, 0] } : {}}
+                transition={{ duration: 0.5, repeat: isStill ? 0 : Infinity, repeatDelay: 4 }}
+              >
+                {isStill ? "[ #0x82_REDUNDANCY: STABILIZED_CLICK ]" : "[ #0x82_REDUNDANCY: DRIFTING ]"}
+              </motion.button>
+
+              <AnimatePresence>
+                {redundancyHovered && !isStill && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-[7px] font-mono text-zinc-400 mt-2 tracking-widest text-center"
+                  >
+                    COORDINATE SYNC LOST. TRACE IS DRIFTING.<br />
+                    LOCK ARCHIVE STILLNESS TO STABILIZE RESIDUE.
+                  </motion.p>
+                )}
+
+                {redundancyExpanded && isStill && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    key="redundancy-card"
+                    className="mt-6 p-6 border border-dashed border-purple-200 bg-purple-50/10 max-w-sm rounded backdrop-blur-sm shadow-[12px_12px_32px_rgba(124,58,237,0.03)] text-left"
+                  >
+                    <div className="flex justify-between items-center text-[7.5px] font-mono text-purple-600 uppercase tracking-widest font-black border-b border-purple-100/60 pb-2 mb-3">
+                      <span>Ref_ID: #0x82_REDUNDANCY</span>
+                      <span>STABLE</span>
+                    </div>
+                    <p className="text-[11px] font-light text-zinc-600 leading-relaxed italic">
+                      “Every time users tap to decline the tracking cookies, we delay the checkout screen by exactly 800 milliseconds. It is not an asynchronous load latency. It is a psychological friction buffer. They need to sit with their dissent just long enough to feel the weight of their choices.”
+                    </p>
+                    <div className="text-[7px] font-mono text-purple-400 uppercase tracking-widest text-right mt-3">
+                      — CAROL'S SYSTEM DRIFT STUDY
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
         </div>
       </div>
     </section>

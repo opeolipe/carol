@@ -46,7 +46,7 @@ export const ProfilePage = () => {
   const backgroundOpacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0.02, 0.05, 0.05, 0.02]);
 
   return (
-    <div ref={containerRef} className="relative min-h-screen bg-[#fbfbf9] selection:bg-zinc-900 selection:text-white pb-[20vh]">
+    <div ref={containerRef} className="relative min-h-screen bg-[var(--background)] selection:bg-zinc-900 selection:text-white pb-[20vh]">
       {/* Background System Grid */}
       <motion.div 
         style={{ opacity: backgroundOpacity }}
